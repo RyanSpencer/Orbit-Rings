@@ -1,0 +1,26 @@
+this.fillText(ctx, "Thanks to the tragic losses and gains made in the Great Space Wars", 10, 20, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "(GSW), the United Republic of Allied Nation and Universe and Systems", 10, 60, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "(URANUS) decreed and end to any and all wars. To prevent secret", 10, 100, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "wars or other such problems resulting from no wars alllowed, the", 10, 140, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "URANUS decreed that all battles over problems betweeen members", 10, 180, "30pt 'Exo 2'", "white" );
+            this.fillText(ctx, "would be fought in the ORBIT RINGS. Planets would summon avatars", 10, 220, "30pt 'Exo 2'", "white" ); 
+            this.fillText(ctx, "to the arena with a health and size related to actual planet population", 10, 260, "30pt 'Exo 2'", "white" );
+            this.fillText(ctx, "and size, and would battle in an all out bumper car battleground. As", 10, 300, "30pt 'Exo 2'", "white" );
+            this.fillText(ctx, "planets collide they lose population, when one planet loses all", 10, 340, "30pt 'Exo 2'", "white" );
+            this.fillText(ctx, "population they are declared losers and exploded. The last planet", 10, 380, "30pt 'Exo 2'", "white" );
+            this.fillText(ctx, "alive wins! All for the sake of preserving Intergalatic Peace", 10, 420, "30pt 'Exo 2'", "white")
+			
+			
+ this.fillText(ctx, "In gameplay terms when planets collide there is a loss of life associated", 10, 20, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "with the collision, whoever's population hits zero first loses. However", 10, 60, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "circumstances can change the loss of population. Larger planets will", 10, 100, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "lose less population when hitting smaller planets and vice verse.", 10, 140, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "Planets which hit other planets in a different direction than they were", 10, 180, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "moving will tend to deal more damage. There is a small bounce", 10, 220, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "whenever a planet runs into another planet or a wall that can be used", 10, 260, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "in your favor. All planets have some sort of gravitational pull around", 10, 300, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "them that will push players away in a clockwise direction. Planets", 10, 340, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "that are bigger or the same size as other planets don't care about", 10, 380, "30pt 'Exo 2'", "white");
+            this.fillText(ctx, "their gravitational pull though. Last but not least, the flux around the", 10, 420, "30pt 'Exo 2'", "white"); //blaze it
+            this.fillText(ctx, "edge of the avatar realmis unstable, and running parallel and towards", 10, 460, "30pt 'Exo 2'", "white"); 
+            this.fillText(ctx, " it at the same time will cause a boost of immense speed", 10, 500, "30pt 'Exo 2'", "white"); 

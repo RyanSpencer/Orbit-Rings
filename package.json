@@ -1,0 +1,38 @@
+{
+  "name": "orbitrings",
+  "version": "1.0.0",
+  "description": "physics based 8 person multiplayer game",
+  "main": "server/app.js",
+  "scripts": {
+    "build": "babel ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./client --out-file ./hosted/bundle.js",
+    "nodemon": "nodemon --watch ./server ./server/app.js",
+    "start": "node ./server/app.js",
+    "pretest": "eslint ./server --fix",
+    "test": "echo \"Tests complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanSpencer/Orbit-Rings.git"
+  },
+  "author": "Ryan Spencer & Muriel Hagge",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RyanSpencer/Orbit-Rings/issues"
+  },
+  "homepage": "https://github.com/RyanSpencer/Orbit-Rings#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3",
+    "victor": "^1.1.0",
+    "xxhashjs": "^0.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.3.2",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "nodemon": "^1.11.0"
+  }
+}

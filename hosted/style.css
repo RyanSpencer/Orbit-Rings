@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css?family=Jura');
+
+body{
+  text-align: center;
+  background-color: #111111;
+}
+h1{
+  font-family: 'Jura', 'Titillium Web', sans-serif;
+  font-size: 2.5em;
+  margin: 50px;
+  color: lawngreen;
+}
+h2{
+  font-family: 'Jura', 'Titillium Web', sans-serif;
+  font-size: 2.0em;
+  margin: 50px;
+  margin-top: 0;
+}
+p{
+  font-family: sans-serif;
+}
+canvas{
+  margin-left: 5%;
+  margin-bottom: 20px;
+  float: left;
+  box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
+}
+label{
+  font-family: 'Jura', 'Titillium Web', sans-serif;
+  font-size: 1.5em;
+  color: white;
+}
+input{
+  padding: 5px;
+  margin: 5px 10px 5px 10px;
+}
+form{
+  margin-top: 20px;
+}
+#roomSetup{
+  display: inline-block;
+  color: white;
+  width: 310px;
+  text-align: center;
+}
+#hostRoomDiv{
+  margin-top:5%;
+}
+.button{
+  padding: 10px;
+  margin: 10px auto;
+  border: none;
+  border-radius: 3px;
+  font-size: 1em;
+  display: block;
+}
+.button:hover{
+  background-color: lawngreen;
+}
+.playerAvatar{
+  width: 60px;
+  height: 60px;
+  border-radius: 2px;
+  margin: 20px 0px;
+  margin-left: 120px;
+}
+#host{
+  font-family: 'Jura', 'Titillium Web', sans-serif;
+  font-size: 1.4em;
+  padding-top: 15px;
+}
+@media only screen and (max-width: 1710px) {
+  canvas{
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    float: initial;
+  }  
+}

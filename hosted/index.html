@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Orbit Rings</title>
+    <meta charset="utf-8"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/bundle.js"></script>
+    <link rel="stylesheet" href="/assets/style.css">
+  </head>
+  <body>
+    <h1>Orbit Rings</h1>
+    <div id="gameContent">
+      <canvas id="canvas" height="720" width="1280">Please use an HTML 5 browser</canvas>
+            
+      <div id="roomSetup">
+        <div id="hostRoomDiv">
+          <label for="hostRoom">Start a Battle: </label><br />
+          <input id="hostName" name="hostRoom" type="text" placeholder="Battle Name">
+          <input id="hostButton" class="button" type="button" value="Begin!">
+        </div>
+        <br />
+        <div id="joinRoomDiv">
+          <label for="joinRoom">Join a Battle: </label><br />
+          <div id="battleList">
+<!--
+            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (4/8)">
+            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (2/8)">
+            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (6/8)">
+-->
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </body>
+</html>
