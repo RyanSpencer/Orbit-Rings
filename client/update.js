@@ -3,12 +3,8 @@ const update = (data) => {
     cars[data.hash] = data;
     return;
   }
-
-  if(data.hash === hash) {
-    return;
-  }
-
-  if(cars[data.hash].lastUpdate >= data.lastUpdate) {
+  
+  if((cars[data.hash].lastUpdate >= data.lastUpdate) || (data.hash === hash)) {
     return;
   }
 

@@ -660,11 +660,7 @@ var update = function update(data) {
     return;
   }
 
-  if (data.hash === hash) {
-    return;
-  }
-
-  if (cars[data.hash].lastUpdate >= data.lastUpdate) {
+  if (cars[data.hash].lastUpdate >= data.lastUpdate || data.hash === hash) {
     return;
   }
 
