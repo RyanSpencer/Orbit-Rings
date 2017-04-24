@@ -82,7 +82,7 @@ const configureSocket = (sock, data) => {
   socket.hash = hash;
 
   // create car
-  const car = new Car(hash);
+  const car = new Car(hash, 100, 100);
 
   // get an array of all the sockets in the room
   const socketRoom = io.sockets.adapter.rooms[data.roomName];
@@ -118,7 +118,12 @@ const configureSocket = (sock, data) => {
       confirmHost(socket);
     }
   }
+  
+  const initPos = positionCar(Object.keys(roomsObj[data.roomName]).length);
+  car.x = initPos.x;
+  car.y = initPos.y;
 
+  
   car.fillStyle = colors[Object.keys(roomsObj[data.roomName]).length - 1];
   roomsObj[data.roomName][hash].color = car.fillStyle;
   // client sends the name of the room they want to join
@@ -145,6 +150,26 @@ const configureSocket = (sock, data) => {
   // update everyones list of rooms yey
   updateJoinableRoomsS();
   updateRoomStatusS(socket);
+};
+
+const positionCar = (carInRoom) =>{
+  let degree = 45;//360/8
+  const radiusMag = 200;
+  const centerX = 1280/2;
+  const centerY = 720/2;
+  degree *= carInRoom + 4;
+
+  let radiusX = Math.cos(degree* (Math.PI / 180))*radiusMag;
+  let radiusY = Math.tan(degree* (Math.PI / 180))*radiusX;
+
+  let initX = centerX + radiusX - 12.5;
+  let initY = centerY + radiusY - 12.5;
+
+  const initPos ={
+    x: initX,
+    y: initY
+  }  
+  return initPos;
 };
 
 const handleMovement = (socket, dataObj) => {
