@@ -51,7 +51,7 @@ const character = [
 ];
 
 const moveCar = (dt, car) => {
-    
+    //console.log(car.velocity);
     car.velocity.x += car.acceleration.x * dt;
     car.velocity.y += car.acceleration.y * dt;
 
@@ -69,7 +69,7 @@ const moveCar = (dt, car) => {
     else if (car.velocity.y < 0) {
         car.velocity.y += car.drag;
     }                  
-
+    //console.log(car.velocity);
     //to check gravitational pull towards the sun
     const length = distance(car, sun);
     //If its inside the area of the effect then continue
@@ -98,7 +98,7 @@ const moveCar = (dt, car) => {
 
 //Move all the cars
 const moveCars = (dt) => {
-    const car = cars[hash];
+    let car = cars[hash];
 
     //First car is controlled using arrow keys
     let accel = false;
@@ -123,13 +123,24 @@ const moveCars = (dt) => {
         car.acceleration.x = 0;
         car.acceleration.y = 0;
     }
-    
-    moveCar(dt, car);
-
+  
+    //If this is the host client
     if(isHost) {
+        //cars update time
         car.lastUpdate = new Date().getTime();
+        //Move the car
+        moveCar(dt, car);
+      
+        //Set the hosted version of the host car to our new moved car
+        hosted[hash] = car
+        //Check collisions of all hosted cars
+        checkCollisions(dt);
+        //update the car again so the car and hosted car are the same
+        car = hosted[hash];
+        //Send to all clients
         socket.emit('hostUpdatedMovement', car);
     } else {
+        //Send back to host, host will calculate physics
         socket.emit('movementUpdate', car);
     }
 };
@@ -137,11 +148,11 @@ const moveCars = (dt) => {
 //Collision detection oooooooh boi
 const checkCollisions = (dt) => {
     
-    const keys = Object.keys(cars);
+    const keys = Object.keys(hosted);
     //Loop through all cars
     for (let i = 0; i < keys.length; i++)
     {
-        const car = cars[keys[i]];
+        const car = hosted[keys[i]];
         //If they are dead ignore em
         if (car.state === CAR_STATE.DEAD) {
             continue;
@@ -176,7 +187,7 @@ const checkCollisions = (dt) => {
         }
         //loop through the cars a second time to check car on car action
         for (let j = 0; j < keys.length; j++) {
-            const car2 = cars[keys[j]];
+            const car2 = hosted[keys[j]];
             
             //skip through if the car is dead or its the same car
             if (car2.state === CAR_STATE.DEAD) continue;

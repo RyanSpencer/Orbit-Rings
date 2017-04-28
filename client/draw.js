@@ -2,13 +2,7 @@
 let debug = false;
 
 //Draws everthing to the screen
-const drawCars = () => {
-
-  const deltaTime = calculateDeltaTime();
-
-  moveCars(deltaTime);
-
-  checkCollisions(deltaTime);
+const drawCars = (deltaTime) => {
 
   //Draw background
   ctx.save();
@@ -94,7 +88,14 @@ const drawCars = () => {
   }
 
   drawHUD();
-  animationFrame = requestAnimationFrame(drawCars);
+};
+
+const updateSimulation = () => {
+  const deltaTime = calculateDeltaTime();
+  animationFrame = requestAnimationFrame(updateSimulation);
+  moveCars(deltaTime);
+  if (isHost) updateClientCar(deltaTime);
+  drawCars(deltaTime);
 };
 
 const drawHUD = () => {

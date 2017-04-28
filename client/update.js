@@ -4,7 +4,7 @@ const update = (data) => {
     return;
   }
   
-  if((cars[data.hash].lastUpdate >= data.lastUpdate) || (data.hash === hash)) {
+  if((cars[data.hash].lastUpdate >= data.lastUpdate)) {
     return;
   }
 
@@ -68,7 +68,7 @@ const setUser = (data) => {
     hosted[hash] = data;
   }
   gameState === GAME_STATE.INGAME;
-  requestAnimationFrame(drawCars);
+  requestAnimationFrame(updateSimulation);
 };
 
 const playerDeath = (data) => {
