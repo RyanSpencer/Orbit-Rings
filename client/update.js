@@ -3,12 +3,8 @@ const update = (data) => {
     cars[data.hash] = data;
     return;
   }
-
-  if(data.hash === hash) {
-    return;
-  }
-
-  if(cars[data.hash].lastUpdate >= data.lastUpdate) {
+  
+  if((cars[data.hash].lastUpdate >= data.lastUpdate) || (data.hash === hash)) {
     return;
   }
 
@@ -38,11 +34,12 @@ const update = (data) => {
 const hostLeft = () => {
   socket.disconnect();
   cancelAnimationFrame(animationFrame);
-  ctx.fillRect(0, 0, 500, 500);
-  ctx.fillStyle = 'white';
-  ctx.font = '48px serif';
-  ctx.fillText('Host left.', 20, 100);
-  ctx.fillText('Reload for a new game.', 20, 200);  
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  fillText("Host left.", WIDTH/2, HEIGHT/2-210, "20pt Jura", "white");
+  fillText("Reload for a new game.", WIDTH/2, HEIGHT/2-170, "20pt Jura", "white");
+  ctx.restore();
 };
 
 const removeUser = (data) => {

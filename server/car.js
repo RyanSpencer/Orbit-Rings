@@ -1,9 +1,9 @@
 class Car {
-  constructor(hash) {
+  constructor(hash, initX, initY) {
     this.hash = hash;
     this.lastUpdate = new Date().getTime();
-    this.x = 100;
-    this.y = 100;
+    this.x = initX;
+    this.y = initY;
     this.prevX = 0;
     this.prevY = 0;
     this.destX = 0;

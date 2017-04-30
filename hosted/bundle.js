@@ -113,6 +113,17 @@ var drawHUD = function drawHUD() {
     fillText("Player " + (i + 1) + " Population: " + cars[keys[i]].health.toFixed(1) + " million", 10, HEIGHT - (keys.length - i) * 30, "20pt 'Exo 2'", cars[keys[i]].fillStyle);
   }
 
+  ctx.strokeStyle = 'white';
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, 0);
+  ctx.lineTo(canvas.width / 2, canvas.height);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height / 2);
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+
   ctx.restore();
 };
 
@@ -641,7 +652,7 @@ var calculateDeltaTime = function calculateDeltaTime() {
     lastTime = now;
     return 1 / fps;
 };
-'use strict';
+"use strict";
 
 var update = function update(data) {
   if (!cars[data.hash]) {
@@ -649,11 +660,7 @@ var update = function update(data) {
     return;
   }
 
-  if (data.hash === hash) {
-    return;
-  }
-
-  if (cars[data.hash].lastUpdate >= data.lastUpdate) {
+  if (cars[data.hash].lastUpdate >= data.lastUpdate || data.hash === hash) {
     return;
   }
 
@@ -682,11 +689,12 @@ var update = function update(data) {
 var hostLeft = function hostLeft() {
   socket.disconnect();
   cancelAnimationFrame(animationFrame);
-  ctx.fillRect(0, 0, 500, 500);
-  ctx.fillStyle = 'white';
-  ctx.font = '48px serif';
-  ctx.fillText('Host left.', 20, 100);
-  ctx.fillText('Reload for a new game.', 20, 200);
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  fillText("Host left.", WIDTH / 2, HEIGHT / 2 - 210, "20pt Jura", "white");
+  fillText("Reload for a new game.", WIDTH / 2, HEIGHT / 2 - 170, "20pt Jura", "white");
+  ctx.restore();
 };
 
 var removeUser = function removeUser(data) {

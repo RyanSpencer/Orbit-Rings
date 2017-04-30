@@ -27,10 +27,29 @@ const roomsObj = {};
     with no work
     this meme is mine
     the powerpuff girls can really twerk
-    
+
     -by Ryan don't call me steven ma Spencer
 */
 const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'cyan'];
+const positionCar = (carInRoom) => {
+  let degree = 45;// 360/8
+  const radiusMag = 200;
+  const centerX = (1280 / 2) - 12.5;
+  const centerY = (720 / 2) - 12.5;
+  degree *= carInRoom + 4;
+
+  const radiusX = Math.cos(degree * (Math.PI / 180)) * radiusMag;
+  const radiusY = Math.tan(degree * (Math.PI / 180)) * radiusX;
+
+  const initX = centerX + radiusX;
+  const initY = centerY + radiusY;
+
+  const initPos = {
+    x: initX,
+    y: initY,
+  };
+  return initPos;
+};
 
 const confirmHost = (sock) => {
   const socket = sock;
@@ -63,9 +82,9 @@ const updateJoinableRoomsS = () => {
 
 const updateRoomStatusS = (socket) => {
   // update for users who are in room/game
-  //send them back the roomsObj object for just their room
+  // send them back the roomsObj object for just their room
   const socketRoom = roomsObj[socket.room];
-  //console.dir(socketRoom);
+  // console.dir(socketRoom);
   io.sockets.in(socket.room).emit('updateRoomStatusC', { roomName: socket.room, roomObj: socketRoom });
 };
 
@@ -82,7 +101,7 @@ const configureSocket = (sock, data) => {
   socket.hash = hash;
 
   // create car
-  const car = new Car(hash);
+  const car = new Car(hash, 100, 100);
 
   // get an array of all the sockets in the room
   const socketRoom = io.sockets.adapter.rooms[data.roomName];
@@ -119,13 +138,18 @@ const configureSocket = (sock, data) => {
     }
   }
 
+  const initPos = positionCar(Object.keys(roomsObj[data.roomName]).length);
+  car.x = initPos.x;
+  car.y = initPos.y;
+
+
   car.fillStyle = colors[Object.keys(roomsObj[data.roomName]).length - 1];
   roomsObj[data.roomName][hash].color = car.fillStyle;
   // client sends the name of the room they want to join
   // if room does not exist make them host
-  
+
   // if rooms is full just tell them*******************->STILL NEED TO DO THIS
-  
+
   // if room exists and has room just add them as not host. tell them who host is
 
   // send to client
@@ -168,13 +192,13 @@ const handleDisconnect = (socket) => {
   if (roomsObj[socket.room]) delete roomsObj[socket.room][socket.hash];
   updateJoinableRoomsS();
   updateRoomStatusS(socket);
-  
-    
+
+
   if (socket.isHost && socketRoom) {
     io.sockets.in(socket.room).emit('hostLeft');
 
     const socketKeys = Object.keys(socketRoom.sockets);
-     
+
     for (let i = 0; i < socketKeys.length; i++) {
       const socketList = io.sockets.connected;
       socketList[socketKeys[i]].disconnect();
@@ -182,11 +206,10 @@ const handleDisconnect = (socket) => {
     console.log(roomsObj[socket.room]);
     delete roomsObj[socket.room];
     updateJoinableRoomsS();
-  }
-  else if (socket.isHost) {
-      console.log(roomsObj[socket.room]);
-      delete roomsObj[socket.room];
-      updateJoinableRoomsS();
+  } else if (socket.isHost) {
+    console.log(roomsObj[socket.room]);
+    delete roomsObj[socket.room];
+    updateJoinableRoomsS();
   }
 };
 
