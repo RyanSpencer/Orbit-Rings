@@ -9,6 +9,7 @@ const updateClientCar = (dt) => {
   const keys = Object.keys(hosted);
   for (let i = 0; i < keys.length; i++) {
     let car = hosted[keys[i]];
+    if (car.hash === hash) continue;
     //Get dt, then move the car and check collisons
     moveCar(dt, car);
     checkCollisions(dt)
