@@ -9,8 +9,6 @@ const update = (data) => {
   }
 
   const car = cars[data.hash];
-  car.x = data.x;
-  car.y = data.y;
   car.prevX = data.prevX;
   car.prevY = data.prevY;
   car.destX = data.destX;

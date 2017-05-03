@@ -52,8 +52,14 @@ const drawCars = (deltaTime) => {
     //If the car is dead don't draw it
     if (car.state === CAR_STATE.DEAD) continue;
     //Otherwise draw the car
+      
+    if (car.alpha < 1) car.alpha += 0.05;
     ctx.save();
     ctx.fillStyle = car.fillStyle;
+    
+    car.x = lerp(car.prevX, car.destX, car.alpha);
+    car.y = lerp(car.prevY, car.destY, car.alpha);  
+      
     ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
     ctx.restore();
     if (debug) {

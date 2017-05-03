@@ -54,8 +54,14 @@ var drawCars = function drawCars(deltaTime) {
     //If the car is dead don't draw it
     if (car.state === CAR_STATE.DEAD) continue;
     //Otherwise draw the car
+
+    if (car.alpha < 1) car.alpha += 0.05;
     ctx.save();
     ctx.fillStyle = car.fillStyle;
+
+    car.x = lerp(car.prevX, car.destX, car.alpha);
+    car.y = lerp(car.prevY, car.destY, car.alpha);
+
     ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
     ctx.restore();
     if (debug) {
@@ -186,8 +192,6 @@ var updateClientCar = function updateClientCar(dt) {
         car2.prevY = car.prevY;
         car2.destX = car.destX;
         car2.destY = car.destY;
-        car2.x = car.x;
-        car2.y = car.y;
         car2.moveLeft = car.moveLeft;
         car2.moveRight = car.moveRight;
         car2.moveDown = car.moveDown;
@@ -208,7 +212,6 @@ var updateClientCar = function updateClientCar(dt) {
 
 //Sends other players information to the host
 var movementUpdate = function movementUpdate(data) {
-    //if (data.lastUpdate < hosted[data.hash].lastUpdate) return;
     //Update the hosted car
     hosted[data.hash] = data;
 };
@@ -476,6 +479,9 @@ var character = [
 }];
 
 var moveCar = function moveCar(dt, car) {
+    car.prevX = car.x;
+    car.prevY = car.y;
+
     //console.log(car.velocity);
     car.velocity.x += car.acceleration.x * dt;
     car.velocity.y += car.acceleration.y * dt;
@@ -513,8 +519,10 @@ var moveCar = function moveCar(dt, car) {
     car.velocity.y = clamp(car.velocity.y, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
 
     //move based on velocity
-    car.x += car.velocity.x;
-    car.y += car.velocity.y;
+    car.destX += car.velocity.x;
+    car.destY += car.velocity.y;
+
+    car.alpha = 0.05;
 };
 
 //Move all the cars
@@ -578,24 +586,24 @@ var checkCollisions = function checkCollisions(dt) {
             continue;
         }
         //If cars are at any of the screen edges they bounce a little bit and can't move past them
-        if (car.x <= 0) {
+        if (car.destX <= 0) {
             car.velocity.x *= -0.4;
-            car.x = 0;
+            car.destX = 0;
             moveCar(dt, car);
         }
-        if (car.x + car.size * 2 >= WIDTH) {
+        if (car.destX + car.size * 2 >= WIDTH) {
             car.velocity.x *= -0.4;
-            car.x = WIDTH - car.size * 2;
+            car.destX = WIDTH - car.size * 2;
             moveCar(dt, car);
         }
-        if (car.y <= 0) {
+        if (car.destY <= 0) {
             car.velocity.y *= -0.4;
-            car.y = 0;
+            car.destY = 0;
             moveCar(dt, car);
         }
-        if (car.y + car.size * 2 >= HEIGHT) {
+        if (car.destY + car.size * 2 >= HEIGHT) {
             car.velocity.y *= -0.4;
-            car.y = HEIGHT - car.size * 2;
+            car.destY = HEIGHT - car.size * 2;
             moveCar(dt, car);
         }
 
@@ -626,16 +634,16 @@ var checkCollisions = function checkCollisions(dt) {
 
                 //Cody created code to stop them from going inside one another
                 //Basically move them slightly in the x or y direciton when they collide
-                if (car.x > car2.x) {
-                    car.x++;
+                if (car.destX > car2.destX) {
+                    car.destX++;
                 } else {
-                    car2.x++;
+                    car2.destX++;
                 }
 
-                if (car.y > car2.y) {
-                    car.y++;
+                if (car.destY > car2.destY) {
+                    car.destY++;
                 } else {
-                    car2.y++;
+                    car2.destY++;
                 }
 
                 //Call move once to make sure actions actualy take palce
@@ -699,8 +707,6 @@ var update = function update(data) {
   }
 
   var car = cars[data.hash];
-  car.x = data.x;
-  car.y = data.y;
   car.prevX = data.prevX;
   car.prevY = data.prevY;
   car.destX = data.destX;
@@ -781,16 +787,16 @@ Return Value: the constrained value
 Description: returns a value that is
 constrained between min and max (inclusive) 
 */
-function clamp(val, min, max) {
+var clamp = function clamp(val, min, max) {
     return Math.max(min, Math.min(max, val));
-}
+};
 
 //Distance formula
-function distance(vectorA, vectorB) {
+var distance = function distance(vectorA, vectorB) {
     return Math.sqrt(Math.pow(vectorB.x - vectorA.x, 2) + Math.pow(vectorB.y - vectorA.y, 2));
-}
+};
 //Simple bounding box aka AABB collision
-function aabb(vectorA, vectorB) {
+var aabb = function aabb(vectorA, vectorB) {
     //console.dir(vectorA);
     //console.dir(vectorB);
     if (vectorA.x + vectorA.size * 2 < vectorB.x || vectorA.x > vectorB.x + vectorB.size * 2) {
@@ -799,10 +805,13 @@ function aabb(vectorA, vectorB) {
         return false;
     }
     return true;
-}
-function getRandom(min, max) {
+};
+var getRandom = function getRandom(min, max) {
     return Math.random() * (max - min) + min;
-}
+};
+var lerp = function lerp(v0, v1, alpha) {
+    return (1 - alpha) * v0 + alpha * v1;
+};
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };

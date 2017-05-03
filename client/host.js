@@ -33,8 +33,6 @@ const updateClientCar = (dt) => {
     car2.prevY = car.prevY;
     car2.destX = car.destX;
     car2.destY = car.destY;
-    car2.x = car.x;
-    car2.y = car.y;
     car2.moveLeft = car.moveLeft;
     car2.moveRight = car.moveRight;
     car2.moveDown = car.moveDown;
@@ -56,7 +54,6 @@ const updateClientCar = (dt) => {
 
 //Sends other players information to the host
 const movementUpdate = (data) => {
-  //if (data.lastUpdate < hosted[data.hash].lastUpdate) return;
   //Update the hosted car
   hosted[data.hash] = data;
 };

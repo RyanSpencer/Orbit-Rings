@@ -4,10 +4,10 @@ class Car {
     this.lastUpdate = new Date().getTime();
     this.x = initX;
     this.y = initY;
-    this.prevX = 0;
-    this.prevY = 0;
-    this.destX = 0;
-    this.destY = 0;
+    this.prevX = initX;
+    this.prevY = initY;
+    this.destX = initX;
+    this.destY = initY;
     this.height = 100;
     this.width = 100;
     this.alpha = 0;

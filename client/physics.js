@@ -51,6 +51,9 @@ const character = [
 ];
 
 const moveCar = (dt, car) => {
+    car.prevX = car.x;
+    car.prevY = car.y;
+    
     //console.log(car.velocity);
     car.velocity.x += car.acceleration.x * dt;
     car.velocity.y += car.acceleration.y * dt;
@@ -91,8 +94,10 @@ const moveCar = (dt, car) => {
     car.velocity.y = clamp(car.velocity.y, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
 
     //move based on velocity
-    car.x += car.velocity.x;
-    car.y += car.velocity.y;
+    car.destX += car.velocity.x;
+    car.destY += car.velocity.y;
+    
+    car.alpha = 0.05;
 }
 
 
@@ -158,24 +163,24 @@ const checkCollisions = (dt) => {
             continue;
         }
         //If cars are at any of the screen edges they bounce a little bit and can't move past them
-        if (car.x <= 0) {
+        if (car.destX <= 0) {
             car.velocity.x *= -0.4;
-            car.x = 0;
+            car.destX = 0;
             moveCar(dt, car);
         }
-        if (car.x + car.size * 2 >= WIDTH){
+        if (car.destX + car.size * 2 >= WIDTH){
             car.velocity.x *= -0.4;
-            car.x = WIDTH - car.size * 2;
+            car.destX = WIDTH - car.size * 2;
             moveCar(dt, car);
         }
-        if (car.y <= 0 ){
+        if (car.destY <= 0 ){
             car.velocity.y *= -0.4;
-            car.y = 0;
+            car.destY = 0;
             moveCar(dt, car);
         }
-        if (car.y + car.size * 2 >= HEIGHT){
+        if (car.destY + car.size * 2 >= HEIGHT){
             car.velocity.y *= -0.4;
-            car.y = HEIGHT - car.size * 2;
+            car.destY = HEIGHT - car.size * 2;
             moveCar(dt, car);
         }
 
@@ -204,18 +209,18 @@ const checkCollisions = (dt) => {
 
                 //Cody created code to stop them from going inside one another
                 //Basically move them slightly in the x or y direciton when they collide
-                if (car.x > car2.x) {
-                    car.x++;
+                if (car.destX > car2.destX) {
+                    car.destX++;
                 }
                 else {
-                    car2.x++;
+                    car2.destX++;
                 }
 
-                if (car.y > car2.y) {
-                    car.y++;
+                if (car.destY > car2.destY) {
+                    car.destY++;
                 }
                 else {
-                    car2.y++;
+                    car2.destY++;
                 }
 
                 //Call move once to make sure actions actualy take palce
