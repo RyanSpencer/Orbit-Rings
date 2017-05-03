@@ -1802,7 +1802,25 @@ var updateClientCar = function updateClientCar(dt) {
 var movementUpdate = function movementUpdate(data) {
   if (cars[data.hash].lastUpdate < data.lastUpdate) {
     //Update the hosted car
-    hosted[data.hash] = data;
+    var car = hosted[data.hash];
+    car.prevX = data.prevX;
+    car.prevX = data.prevX;
+    car.prevY = data.prevY;
+    car.destX = data.destX;
+    car.destY = data.destY;
+    car.moveLeft = data.moveLeft;
+    car.moveRight = data.moveRight;
+    car.moveUp = data.moveUp;
+    car.moveDown = data.moveDown;
+    car.alpha = 0.05;
+    car.velocity = data.velocity;
+    car.acceleration = data.acceleration;
+    car.drag = data.drag;
+    car.state = data.state;
+    car.fillStyle = data.fillStyle;
+    car.size = data.size;
+    car.health = data.health;
+    car.pull = data.pull;
   }
 };
 "use strict";
@@ -2093,12 +2111,12 @@ var update = function update(data) {
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;
-  car.drag = car.drag;
-  car.state = car.state;
-  car.fillStyle = car.fillStyle;
-  car.size = car.size;
-  car.health = car.health;
-  car.pull = car.pull;
+  car.drag = data.drag;
+  car.state = data.state;
+  car.fillStyle = data.fillStyle;
+  car.size = data.size;
+  car.health = data.health;
+  car.pull = data.pull;
 };
 
 var hostLeft = function hostLeft() {

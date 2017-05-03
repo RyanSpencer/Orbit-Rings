@@ -16,12 +16,12 @@ const update = (data) => {
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;
-  car.drag = car.drag;
-  car.state = car.state;
-  car.fillStyle = car.fillStyle;
-  car.size = car.size;
-  car.health = car.health;
-  car.pull = car.pull;
+  car.drag = data.drag;
+  car.state = data.state;
+  car.fillStyle = data.fillStyle;
+  car.size = data.size;
+  car.health = data.health;
+  car.pull = data.pull;
 };
 
 

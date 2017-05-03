@@ -56,6 +56,24 @@ const updateClientCar = (dt) => {
 const movementUpdate = (data) => {
   if((cars[data.hash].lastUpdate < data.lastUpdate)) {
      //Update the hosted car
-    hosted[data.hash] = data;
+    const car = hosted[data.hash];
+    car.prevX = data.prevX;
+    car.prevX = data.prevX;
+    car.prevY = data.prevY;
+    car.destX = data.destX;
+    car.destY = data.destY;
+    car.moveLeft = data.moveLeft;
+    car.moveRight = data.moveRight;
+    car.moveUp = data.moveUp;
+    car.moveDown = data.moveDown;
+    car.alpha = 0.05;
+    car.velocity = data.velocity;
+    car.acceleration = data.acceleration;
+    car.drag = data.drag;
+    car.state = data.state;
+    car.fillStyle = data.fillStyle;
+    car.size = data.size;
+    car.health = data.health;
+    car.pull = data.pull;
   }
 };
