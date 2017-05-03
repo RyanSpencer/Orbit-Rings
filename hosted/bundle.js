@@ -1374,6 +1374,239 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
     }, {}] }, {}, [1])(1);
 });
+"use strict";
+
+//Enable for live debug
+var debug = false;
+
+//Draws everthing to the screen
+var drawCars = function drawCars(deltaTime) {
+
+  //Draw background
+  ctx.save();
+  ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+  //Draw the sun
+  ctx.translate(sun.x, sun.y);
+  if (debug) {
+    //Draw the area of gravitational effect if in debug
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+  }
+  //Draw the acual sun
+  ctx.fillStyle = "orange";
+  ctx.beginPath();
+  ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  if (debug) {
+    //If in debug, draw arrows to show direction of gravitational field
+    for (var i = 0; i < 4; i++) {
+      ctx.rotate(Math.PI / 2);
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(-20, -60);
+      ctx.lineTo(20, -60);
+      ctx.lineTo(17, -63);
+      ctx.moveTo(20, -60);
+      ctx.lineTo(17, -57);
+      ctx.stroke();
+      ctx.closePath();
+    }
+  }
+
+  ctx.restore();
+
+  var keys = Object.keys(cars);
+
+  //console.log(cars[keys[0]]);
+
+  for (var _i = 0; _i < keys.length; _i++) {
+    var car = cars[keys[_i]];
+
+    //If the car is dead don't draw it
+    if (car.state === CAR_STATE.DEAD) continue;
+    //Otherwise draw the car
+
+    if (car.alpha < 1) car.alpha += 0.05;
+    ctx.save();
+    ctx.fillStyle = car.fillStyle;
+
+    car.x = lerp(car.prevX, car.destX, car.alpha);
+    car.y = lerp(car.prevY, car.destY, car.alpha);
+
+    ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
+    ctx.restore();
+    if (debug) {
+      //Show the origin of each rectangle for developer aid
+      ctx.save();
+      ctx.translate(car.x, car.y);
+      ctx.beginPath();
+      ctx.fillStyle = "white";
+      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.fill();
+
+      //Show velocity
+      ctx.beginPath();
+      ctx.globalAlpha = 0.7;
+      ctx.strokeStyle = "blue";
+      ctx.translate(car.size, car.size);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
+      ctx.closePath();
+      ctx.stroke();
+
+      //show accleration
+      ctx.beginPath();
+      ctx.strokeStyle = "Red";
+      ctx.moveTo(0, 0);
+      ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
+      ctx.closePath();
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  drawHUD();
+};
+
+var updateSimulation = function updateSimulation() {
+  var deltaTime = calculateDeltaTime();
+  animationFrame = requestAnimationFrame(updateSimulation);
+  moveCars(deltaTime);
+  if (isHost) updateClientCar(deltaTime);
+  drawCars(deltaTime);
+};
+
+var drawHUD = function drawHUD() {
+
+  ctx.save();
+  //Text for debug information
+  if (debug) {
+    fillText("Debug Info:Press N to toggle Debug", 10, 30, "20pt 'Exo 2'", "white");
+  }
+  //Car health stacked from the bottom dynamically so the last player will always next to the bottom of the canvas
+  var keys = Object.keys(cars);
+  for (var i = keys.length - 1; i >= 0; i--) {
+    if (cars[keys[i]].state === CAR_STATE.DEAD) continue;
+    fillText("Player " + (i + 1) + " Population: " + cars[keys[i]].health.toFixed(1) + " million", 10, HEIGHT - (keys.length - i) * 30, "20pt 'Exo 2'", cars[keys[i]].fillStyle);
+  }
+
+  ctx.strokeStyle = 'white';
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, 0);
+  ctx.lineTo(canvas.width / 2, canvas.height);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height / 2);
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+
+  ctx.restore();
+};
+
+//Taken from Boomshine to display text easily
+var fillText = function fillText(string, x, y, css, color) {
+
+  ctx.save();
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/font
+  ctx.font = css;
+  ctx.fillStyle = color;
+  ctx.fillText(string, x, y);
+  ctx.restore();
+};
+
+var drawIntroScreen = function drawIntroScreen() {
+  setTimeout(function () {
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.restore();
+  }, 300);
+};
+'use strict';
+
+var acknowledgeUser = function acknowledgeUser(data) {
+  console.log('New User:');
+  console.log(data.hash);
+  hosted[data.hash] = data;
+  cars[data.hash] = data;
+};
+
+var updateClientCar = function updateClientCar(dt) {
+  var keys = Object.keys(hosted);
+  for (var i = 0; i < keys.length; i++) {
+    var car = hosted[keys[i]];
+    if (car.hash === hash) continue;
+    //Get dt, then move the car and check collisons
+    moveCar(dt, car);
+    checkCollisions(dt);
+
+    //Update last time updated
+    car.lastUpdate = new Date().getTime();
+
+    console.log(car.x);
+    console.log(car.y);
+    console.log(car.destX);
+    console.log(car.destY);
+    console.log(car.alpha);
+    //console.log(car.acceleration.x);
+    //console.log(dt);
+
+    //set the regular cars array
+    var car2 = cars[car.hash];
+
+    if (!car2) {
+      return;
+    }
+
+    car2.prevX = car.prevX;
+    car2.prevY = car.prevY;
+    car2.destX = car.destX;
+    car2.destY = car.destY;
+    car2.moveLeft = car.moveLeft;
+    car2.moveRight = car.moveRight;
+    car2.moveDown = car.moveDown;
+    car2.moveUp = car.moveUp;
+    car2.velocity = car.velocity;
+    car2.acceleration = car.acceleration;
+    car2.state = car.state;
+    car2.health = car.health;
+
+    socket.emit('hostUpdatedMovement', car);
+  }
+};
+
+//Sends other players information to the host
+var movementUpdate = function movementUpdate(data) {
+  if (cars[data.hash].lastUpdate < data.lastUpdate) {
+    //Update the hosted car
+    var car = hosted[data.hash];
+    car.prevX = data.prevX;
+    car.prevX = data.prevX;
+    car.prevY = data.prevY;
+    car.destX = data.destX;
+    car.destY = data.destY;
+    car.moveLeft = data.moveLeft;
+    car.moveRight = data.moveRight;
+    car.moveUp = data.moveUp;
+    car.moveDown = data.moveDown;
+    car.alpha = 0.05;
+    car.velocity = data.velocity;
+    car.acceleration = data.acceleration;
+    car.drag = data.drag;
+    car.state = data.state;
+    car.health = data.health;
+    car.fillStyle = data.fillStyle;
+  }
+};
 'use strict';
 
 var WIDTH = 1280;
@@ -1586,243 +1819,6 @@ var init = function init() {
 };
 
 window.onload = init;
-"use strict";
-
-//Enable for live debug
-var debug = false;
-
-//Draws everthing to the screen
-var drawCars = function drawCars(deltaTime) {
-
-  //Draw background
-  ctx.save();
-  ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-
-  //Draw the sun
-  ctx.translate(sun.x, sun.y);
-  if (debug) {
-    //Draw the area of gravitational effect if in debug
-    ctx.fillStyle = "yellow";
-    ctx.beginPath();
-    ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.fill();
-  }
-  //Draw the acual sun
-  ctx.fillStyle = "orange";
-  ctx.beginPath();
-  ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
-  if (debug) {
-    //If in debug, draw arrows to show direction of gravitational field
-    for (var i = 0; i < 4; i++) {
-      ctx.rotate(Math.PI / 2);
-      ctx.strokeStyle = "black";
-      ctx.beginPath();
-      ctx.moveTo(-20, -60);
-      ctx.lineTo(20, -60);
-      ctx.lineTo(17, -63);
-      ctx.moveTo(20, -60);
-      ctx.lineTo(17, -57);
-      ctx.stroke();
-      ctx.closePath();
-    }
-  }
-
-  ctx.restore();
-
-  var keys = Object.keys(cars);
-
-  //console.log(cars[keys[0]]);
-
-  for (var _i = 0; _i < keys.length; _i++) {
-    var car = cars[keys[_i]];
-
-    //If the car is dead don't draw it
-    if (car.state === CAR_STATE.DEAD) continue;
-    //Otherwise draw the car
-
-    if (car.alpha < 1) car.alpha += 0.05;
-    ctx.save();
-    ctx.fillStyle = car.fillStyle;
-
-    car.x = lerp(car.prevX, car.destX, car.alpha);
-    car.y = lerp(car.prevY, car.destY, car.alpha);
-
-    ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
-    ctx.restore();
-    if (debug) {
-      //Show the origin of each rectangle for developer aid
-      ctx.save();
-      ctx.translate(car.x, car.y);
-      ctx.beginPath();
-      ctx.fillStyle = "white";
-      ctx.arc(0, 0, 3, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.fill();
-
-      //Show velocity
-      ctx.beginPath();
-      ctx.globalAlpha = 0.7;
-      ctx.strokeStyle = "blue";
-      ctx.translate(car.size, car.size);
-      ctx.moveTo(0, 0);
-      ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
-      ctx.closePath();
-      ctx.stroke();
-
-      //show accleration
-      ctx.beginPath();
-      ctx.strokeStyle = "Red";
-      ctx.moveTo(0, 0);
-      ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-
-  drawHUD();
-};
-
-var updateSimulation = function updateSimulation() {
-  var deltaTime = calculateDeltaTime();
-  animationFrame = requestAnimationFrame(updateSimulation);
-  moveCars(deltaTime);
-  if (isHost) updateClientCar(deltaTime);
-  drawCars(deltaTime);
-};
-
-var drawHUD = function drawHUD() {
-
-  ctx.save();
-  //Text for debug information
-  if (debug) {
-    fillText("Debug Info:Press N to toggle Debug", 10, 30, "20pt 'Exo 2'", "white");
-  }
-  //Car health stacked from the bottom dynamically so the last player will always next to the bottom of the canvas
-  var keys = Object.keys(cars);
-  for (var i = keys.length - 1; i >= 0; i--) {
-    if (cars[keys[i]].state === CAR_STATE.DEAD) continue;
-    fillText("Player " + (i + 1) + " Population: " + cars[keys[i]].health.toFixed(1) + " million", 10, HEIGHT - (keys.length - i) * 30, "20pt 'Exo 2'", cars[keys[i]].fillStyle);
-  }
-
-  ctx.strokeStyle = 'white';
-  ctx.beginPath();
-  ctx.moveTo(canvas.width / 2, 0);
-  ctx.lineTo(canvas.width / 2, canvas.height);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(0, canvas.height / 2);
-  ctx.lineTo(canvas.width, canvas.height / 2);
-  ctx.stroke();
-
-  ctx.restore();
-};
-
-//Taken from Boomshine to display text easily
-var fillText = function fillText(string, x, y, css, color) {
-
-  ctx.save();
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/font
-  ctx.font = css;
-  ctx.fillStyle = color;
-  ctx.fillText(string, x, y);
-  ctx.restore();
-};
-
-var drawIntroScreen = function drawIntroScreen() {
-  setTimeout(function () {
-    ctx.save();
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
-    ctx.restore();
-  }, 300);
-};
-'use strict';
-
-var acknowledgeUser = function acknowledgeUser(data) {
-  console.log('New User:');
-  console.log(data.hash);
-  hosted[data.hash] = data;
-  cars[data.hash] = data;
-};
-
-var updateClientCar = function updateClientCar(dt) {
-  var keys = Object.keys(hosted);
-  for (var i = 0; i < keys.length; i++) {
-    var car = hosted[keys[i]];
-    if (car.hash === hash) continue;
-    //Get dt, then move the car and check collisons
-    moveCar(dt, car);
-    checkCollisions(dt);
-
-    //Update last time updated
-    car.lastUpdate = new Date().getTime();
-
-    console.log(car.x);
-    console.log(car.moveLeft);
-    console.log(car.acceleration.x);
-    console.log(dt);
-
-    //set the regular cars array
-    var car2 = cars[car.hash];
-
-    if (!car2) {
-      return;
-    }
-
-    car2.prevX = car.prevX;
-    car2.prevY = car.prevY;
-    car2.destX = car.destX;
-    car2.destY = car.destY;
-    car2.moveLeft = car.moveLeft;
-    car2.moveRight = car.moveRight;
-    car2.moveDown = car.moveDown;
-    car2.moveUp = car.moveUp;
-    car2.alpha = 0.05;
-    car2.velocity = car.velocity;
-    car2.acceleration = car.acceleration;
-    car2.drag = car.drag;
-    car2.state = car.state;
-    car2.fillStyle = car.fillStyle;
-    car2.size = car.size;
-    car2.health = car.health;
-    car2.pull = car.pull;
-
-    socket.emit('hostUpdatedMovement', car);
-  }
-};
-
-//Sends other players information to the host
-var movementUpdate = function movementUpdate(data) {
-  if (cars[data.hash].lastUpdate < data.lastUpdate) {
-    //Update the hosted car
-    var car = hosted[data.hash];
-    car.prevX = data.prevX;
-    car.prevX = data.prevX;
-    car.prevY = data.prevY;
-    car.destX = data.destX;
-    car.destY = data.destY;
-    car.moveLeft = data.moveLeft;
-    car.moveRight = data.moveRight;
-    car.moveUp = data.moveUp;
-    car.moveDown = data.moveDown;
-    car.alpha = 0.05;
-    car.velocity = data.velocity;
-    car.acceleration = data.acceleration;
-    car.drag = data.drag;
-    car.state = data.state;
-    car.fillStyle = data.fillStyle;
-    car.size = data.size;
-    car.health = data.health;
-    car.pull = data.pull;
-  }
-};
 "use strict";
 
 //Array of colors for the cars to be
@@ -2111,12 +2107,9 @@ var update = function update(data) {
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;
-  car.drag = data.drag;
   car.state = data.state;
   car.fillStyle = data.fillStyle;
-  car.size = data.size;
   car.health = data.health;
-  car.pull = data.pull;
 };
 
 var hostLeft = function hostLeft() {

@@ -18,9 +18,12 @@ const updateClientCar = (dt) => {
     car.lastUpdate = new Date().getTime();
 
     console.log(car.x);
-    console.log(car.moveLeft);
-    console.log(car.acceleration.x);
-    console.log(dt);
+    console.log(car.y);
+    console.log(car.destX);
+    console.log(car.destY);
+    console.log(car.alpha);
+    //console.log(car.acceleration.x);
+    //console.log(dt);
 
     //set the regular cars array
     const car2 = cars[car.hash];
@@ -37,15 +40,10 @@ const updateClientCar = (dt) => {
     car2.moveRight = car.moveRight;
     car2.moveDown = car.moveDown;
     car2.moveUp = car.moveUp;
-    car2.alpha = 0.05;
     car2.velocity = car.velocity;
     car2.acceleration = car.acceleration;
-    car2.drag = car.drag;
     car2.state = car.state;
-    car2.fillStyle = car.fillStyle;
-    car2.size = car.size;
     car2.health = car.health;
-    car2.pull = car.pull;
 
   socket.emit('hostUpdatedMovement', car);
   }
@@ -71,9 +69,7 @@ const movementUpdate = (data) => {
     car.acceleration = data.acceleration;
     car.drag = data.drag;
     car.state = data.state;
-    car.fillStyle = data.fillStyle;
-    car.size = data.size;
     car.health = data.health;
-    car.pull = data.pull;
+    car.fillStyle =data.fillStyle;
   }
 };

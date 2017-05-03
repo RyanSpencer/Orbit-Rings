@@ -141,6 +141,10 @@ const configureSocket = (sock, data) => {
   const initPos = positionCar(Object.keys(roomsObj[data.roomName]).length);
   car.x = initPos.x;
   car.y = initPos.y;
+  car.destX = initPos.x;
+  car.destY = initPos.y;
+  car.prevX = initPos.x;
+  car.prevY = initPos.y;
 
 
   car.fillStyle = colors[Object.keys(roomsObj[data.roomName]).length - 1];
