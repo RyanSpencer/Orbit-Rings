@@ -147,13 +147,16 @@ const updateRoomStatusC = (data) =>{
     //start button for host
     if(isHost){
       roomSetupDiv.innerHTML += `<input id="startButton" class="button" type="button" value="Start the Game">`;
-    }
-
-    const startButton = document.querySelector("#startButton");
-    startButton.addEventListener('click', (e)=>{
+      
+      const startButton = document.querySelector("#startButton");
+      startButton.addEventListener('click', (e)=>{
       console.log('host clicked start');
       socket.emit('hostStart');
+      roomSetupDiv.removeChild(startButton);
     });
+    }
+
+  
 
     const keys = Object.keys(data.roomObj);
     for(let i = 0; i < keys.length; i++){
