@@ -146,6 +146,7 @@ const moveCars = (dt) => {
         socket.emit('hostUpdatedMovement', car);
     } else {
         //Send back to host, host will calculate physics
+        car.lastUpdate = new Date().getTime();
         socket.emit('movementUpdate', car);
     }
 };

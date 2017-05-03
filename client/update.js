@@ -13,10 +13,6 @@ const update = (data) => {
   car.prevY = data.prevY;
   car.destX = data.destX;
   car.destY = data.destY;
-  car.moveLeft = data.moveLeft;
-  car.moveRight = data.moveRight;
-  car.moveDown = data.moveDown;
-  car.moveUp = data.moveUp;
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;

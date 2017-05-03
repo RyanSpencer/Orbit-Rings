@@ -17,10 +17,10 @@ const updateClientCar = (dt) => {
     //Update last time updated
     car.lastUpdate = new Date().getTime();
 
-    //console.log(car.x);
-    //console.log(car.moveLeft);
-    //console.log(car.acceleration.x);
-    //console.log(dt);
+    console.log(car.x);
+    console.log(car.moveLeft);
+    console.log(car.acceleration.x);
+    console.log(dt);
 
     //set the regular cars array
     const car2 = cars[car.hash];
@@ -54,6 +54,8 @@ const updateClientCar = (dt) => {
 
 //Sends other players information to the host
 const movementUpdate = (data) => {
-  //Update the hosted car
-  hosted[data.hash] = data;
+  if((cars[data.hash].lastUpdate < data.lastUpdate)) {
+     //Update the hosted car
+    hosted[data.hash] = data;
+  }
 };
