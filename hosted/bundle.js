@@ -6,96 +6,111 @@ var debug = false;
 //Draws everthing to the screen
 var drawCars = function drawCars() {
 
-  var deltaTime = calculateDeltaTime();
+  if (gameState === GAME_STATE.LOBBY) {
 
-  moveCars(deltaTime);
-
-  checkCollisions(deltaTime);
-
-  //Draw background
-  ctx.save();
-  ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-
-  //Draw the sun
-  ctx.translate(sun.x, sun.y);
-  if (debug) {
-    //Draw the area of gravitational effect if in debug
-    ctx.fillStyle = "yellow";
-    ctx.beginPath();
-    ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.fill();
-  }
-  //Draw the acual sun
-  ctx.fillStyle = "orange";
-  ctx.beginPath();
-  ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
-  if (debug) {
-    //If in debug, draw arrows to show direction of gravitational field
-    for (var i = 0; i < 4; i++) {
-      ctx.rotate(Math.PI / 2);
-      ctx.strokeStyle = "black";
-      ctx.beginPath();
-      ctx.moveTo(-20, -60);
-      ctx.lineTo(20, -60);
-      ctx.lineTo(17, -63);
-      ctx.moveTo(20, -60);
-      ctx.lineTo(17, -57);
-      ctx.stroke();
-      ctx.closePath();
-    }
-  }
-
-  ctx.restore();
-
-  var keys = Object.keys(cars);
-
-  //console.log(cars[keys[0]]);
-
-  for (var _i = 0; _i < keys.length; _i++) {
-    var car = cars[keys[_i]];
-
-    //If the car is dead don't draw it
-    if (car.state === CAR_STATE.DEAD) continue;
-    //Otherwise draw the car
     ctx.save();
-    ctx.fillStyle = car.fillStyle;
-    ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (isHost) {
+      fillText("Start when ready", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    } else {
+      fillText("Waiting for host to start the game", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    }
     ctx.restore();
+  } else {
+    var deltaTime = calculateDeltaTime();
+
+    moveCars(deltaTime);
+
+    checkCollisions(deltaTime);
+
+    //Draw background
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+    //Draw the sun
+    ctx.translate(sun.x, sun.y);
     if (debug) {
-      //Show the origin of each rectangle for developer aid
-      ctx.save();
-      ctx.translate(car.x, car.y);
+      //Draw the area of gravitational effect if in debug
+      ctx.fillStyle = "yellow";
       ctx.beginPath();
-      ctx.fillStyle = "white";
-      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
       ctx.closePath();
       ctx.fill();
-
-      //Show velocity
-      ctx.beginPath();
-      ctx.globalAlpha = 0.7;
-      ctx.strokeStyle = "blue";
-      ctx.translate(car.size, car.size);
-      ctx.moveTo(0, 0);
-      ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
-      ctx.closePath();
-      ctx.stroke();
-
-      //show accleration
-      ctx.beginPath();
-      ctx.strokeStyle = "Red";
-      ctx.moveTo(0, 0);
-      ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.restore();
     }
+    //Draw the acual sun
+    ctx.fillStyle = "orange";
+    ctx.beginPath();
+    ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    if (debug) {
+      //If in debug, draw arrows to show direction of gravitational field
+      for (var i = 0; i < 4; i++) {
+        ctx.rotate(Math.PI / 2);
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.moveTo(-20, -60);
+        ctx.lineTo(20, -60);
+        ctx.lineTo(17, -63);
+        ctx.moveTo(20, -60);
+        ctx.lineTo(17, -57);
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+
+    ctx.restore();
+
+    var keys = Object.keys(cars);
+
+    //console.log(cars[keys[0]]);
+
+    for (var _i = 0; _i < keys.length; _i++) {
+      var car = cars[keys[_i]];
+
+      //If the car is dead don't draw it
+      if (car.state === CAR_STATE.DEAD) continue;
+      //Otherwise draw the car
+      ctx.save();
+      ctx.fillStyle = car.fillStyle;
+      ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
+      ctx.restore();
+      if (debug) {
+        //Show the origin of each rectangle for developer aid
+        ctx.save();
+        ctx.translate(car.x, car.y);
+        ctx.beginPath();
+        ctx.fillStyle = "white";
+        ctx.arc(0, 0, 3, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+
+        //Show velocity
+        ctx.beginPath();
+        ctx.globalAlpha = 0.7;
+        ctx.strokeStyle = "blue";
+        ctx.translate(car.size, car.size);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
+        ctx.closePath();
+        ctx.stroke();
+
+        //show accleration
+        ctx.beginPath();
+        ctx.strokeStyle = "Red";
+        ctx.moveTo(0, 0);
+        ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    drawHUD();
   }
 
-  drawHUD();
   animationFrame = requestAnimationFrame(drawCars);
 };
 
@@ -145,6 +160,17 @@ var drawIntroScreen = function drawIntroScreen() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.restore();
+  }, 300);
+};
+
+var drawWaitingScreen = function drawWaitingScreen() {
+  setTimeout(function () {
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    fillText("Waiting", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
     ctx.restore();
   }, 300);
 };
@@ -212,7 +238,8 @@ var GAME_STATE = Object.freeze({
   TACTICS: 5,
   DEFAULT: 6,
   ROUND_END: 7,
-  END: 8
+  END: 8,
+  LOBBY: 9
 });
 
 //Object at center of the screen
@@ -332,14 +359,26 @@ var updateJoinableRoomsC = function updateJoinableRoomsC(data) {
     }
   }
 };
+
 var updateRoomStatusC = function updateRoomStatusC(data) {
-  if (gameState === GAME_STATE.WAITING || gameState === GAME_STATE.INGAME) {
+  if (gameState === GAME_STATE.WAITING || gameState === GAME_STATE.LOBBY || gameState === GAME_STATE.INGAME) {
 
     console.log('In updateRoomStatusC IF');
     console.dir(data);
 
     var roomSetupDiv = document.querySelector("#roomSetup");
     roomSetupDiv.innerHTML = '<h2><em>Battle of</br>' + data.roomName + '</em></h2>';
+
+    //start button for host
+    if (isHost) {
+      roomSetupDiv.innerHTML += '<input id="startButton" class="button" type="button" value="Start the Game">';
+    }
+
+    var startButton = document.querySelector("#startButton");
+    startButton.addEventListener('click', function (e) {
+      console.log('host clicked start');
+      socket.emit('hostStart');
+    });
 
     var keys = Object.keys(data.roomObj);
     for (var i = 0; i < keys.length; i++) {
@@ -360,15 +399,20 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
   }
 };
 
+var hostStart = function hostStart() {
+  gameState = GAME_STATE.INGAME;
+};
+
 var onJoin = function onJoin(roomName) {
   socket.emit('onJoin', { roomName: roomName });
-  gameState = GAME_STATE.INGAME;
+  gameState = GAME_STATE.LOBBY;
   socket.on('hostConfirm', confirmHost);
   socket.on('joined', setUser);
   socket.on('updateRoomStatusC', updateRoomStatusC);
   socket.on('updatedMovement', update);
   socket.on('left', removeUser);
   socket.on('hostLeft', hostLeft);
+  socket.on('hostStart', hostStart);
 };
 
 //Opening function

@@ -19,7 +19,8 @@ const GAME_STATE = Object.freeze({
   TACTICS: 5,
   DEFAULT: 6,
   ROUND_END: 7,
-  END: 8
+  END: 8,
+  LOBBY: 9
 });
 
 //Object at center of the screen
@@ -133,14 +134,26 @@ const updateJoinableRoomsC = (data) =>{
     }
   }
 };
+
 const updateRoomStatusC = (data) =>{
-  if(gameState === GAME_STATE.WAITING || gameState === GAME_STATE.INGAME){
+  if(gameState === GAME_STATE.WAITING || gameState === GAME_STATE.LOBBY || gameState === GAME_STATE.INGAME){
 
     console.log(`In updateRoomStatusC IF`);
     console.dir(data);
 
     const roomSetupDiv = document.querySelector("#roomSetup");
     roomSetupDiv.innerHTML = `<h2><em>Battle of</br>${data.roomName}</em></h2>`;
+
+    //start button for host
+    if(isHost){
+      roomSetupDiv.innerHTML += `<input id="startButton" class="button" type="button" value="Start the Game">`;
+    }
+
+    const startButton = document.querySelector("#startButton");
+    startButton.addEventListener('click', (e)=>{
+      console.log('host clicked start');
+      socket.emit('hostStart');
+    });
 
     const keys = Object.keys(data.roomObj);
     for(let i = 0; i < keys.length; i++){
@@ -161,15 +174,20 @@ const updateRoomStatusC = (data) =>{
   }
 };
 
+const hostStart = () =>{
+  gameState = GAME_STATE.INGAME;
+};
+
 const onJoin = (roomName) =>{
   socket.emit('onJoin', {roomName: roomName});
-  gameState = GAME_STATE.INGAME;
+  gameState = GAME_STATE.LOBBY;
   socket.on('hostConfirm', confirmHost);
   socket.on('joined', setUser);
   socket.on('updateRoomStatusC', updateRoomStatusC);
   socket.on('updatedMovement', update);
   socket.on('left', removeUser);
-  socket.on('hostLeft', hostLeft);  
+  socket.on('hostLeft', hostLeft);
+  socket.on('hostStart', hostStart);
 };
 
 //Opening function

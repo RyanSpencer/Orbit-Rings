@@ -213,6 +213,9 @@ const handleDisconnect = (socket) => {
   }
 };
 
+const handleHostStart = (socket) => {
+  io.sockets.in(socket.room).emit('hostStart');
+};
 
 const setupSockets = (ioServer) => {
   io = ioServer;
@@ -226,8 +229,9 @@ const setupSockets = (ioServer) => {
 
     socket.on('movementUpdate', data => handleMovement(socket, data));
 
-
     socket.on('disconnect', data => handleDisconnect(socket, data));
+
+    socket.on('hostStart', data => handleHostStart(socket, data));
   });
 };
 
