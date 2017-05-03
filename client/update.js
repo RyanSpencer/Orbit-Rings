@@ -30,7 +30,6 @@ const update = (data) => {
   car.pull = car.pull;
 };
 
-
 const hostLeft = () => {
   socket.disconnect();
   cancelAnimationFrame(animationFrame);
