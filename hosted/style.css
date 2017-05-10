@@ -87,6 +87,7 @@ form{
   margin-left: 5%;
   margin-bottom: 20px;
   box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
+	display: none;
 }
 @media (max-width: 1497px){
 	#leftAd{
