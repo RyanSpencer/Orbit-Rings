@@ -20,7 +20,7 @@ const GAME_STATE = Object.freeze({
   DEFAULT: 6,
   ROUND_END: 7,
   END: 8,
-  LOBBY: 9
+  LOBBY: 9,
 });
 
 //Object at center of the screen
@@ -181,6 +181,10 @@ const hostStart = () =>{
   gameState = GAME_STATE.INGAME;
 };
 
+const endGame = () =>{
+	gameState = GAME_STATE.END;
+};
+
 const onJoin = (roomName) =>{
   socket.emit('onJoin', {roomName: roomName});
   gameState = GAME_STATE.LOBBY;
@@ -191,6 +195,7 @@ const onJoin = (roomName) =>{
   socket.on('left', removeUser);
   socket.on('hostLeft', hostLeft);
   socket.on('hostStart', hostStart);
+	socket.on('endGame', endGame);
 };
 
 //Opening function
