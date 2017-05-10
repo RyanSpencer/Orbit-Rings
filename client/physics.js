@@ -164,23 +164,27 @@ const checkCollisions = (dt) => {
             continue;
         }
         //If cars are at any of the screen edges they bounce a little bit and can't move past them
-        if (car.destX <= 0) {
+        if (car.x <= 0) {
             car.velocity.x *= -0.4;
+            car.x = 0;
             car.destX = 0;
             moveCar(dt, car);
         }
-        if (car.destX + car.size * 2 >= WIDTH){
+        if (car.x + car.size * 2 >= WIDTH){
             car.velocity.x *= -0.4;
+            car.x = WIDTH - car.size * 2;
             car.destX = WIDTH - car.size * 2;
             moveCar(dt, car);
         }
-        if (car.destY <= 0 ){
+        if (car.y <= 0 ){
             car.velocity.y *= -0.4;
+            car.y = 0;
             car.destY = 0;
             moveCar(dt, car);
         }
-        if (car.destY + car.size * 2 >= HEIGHT){
+        if (car.y + car.size * 2 >= HEIGHT){
             car.velocity.y *= -0.4;
+            car.y = HEIGHT - car.size * 2;
             car.destY = HEIGHT - car.size * 2;
             moveCar(dt, car);
         }
@@ -210,18 +214,22 @@ const checkCollisions = (dt) => {
 
                 //Cody created code to stop them from going inside one another
                 //Basically move them slightly in the x or y direciton when they collide
-                if (car.destX > car2.destX) {
-                    car.destX++;
+                if (car.x > car2.x) {
+                    car.x++;
+                    car.destX = car.x;
                 }
                 else {
-                    car2.destX++;
+                    car2.x++;
+                    car2.destX = car2.x;
                 }
 
-                if (car.destY > car2.destY) {
-                    car.destY++;
+                if (car.y > car2.y) {
+                    car.y++;
+                    car.destY = car.y;
                 }
                 else {
-                    car2.destY++;
+                    car2.y++;
+                    car2.destY = car2.y;
                 }
 
                 //Call move once to make sure actions actualy take palce

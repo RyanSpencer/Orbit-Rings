@@ -21,9 +21,9 @@ const updateClientCar = (dt) => {
     console.log(car.y);
     console.log(car.destX);
     console.log(car.destY);
-    console.log(car.alpha);
-    //console.log(car.acceleration.x);
-    //console.log(dt);
+    //console.log(car.alpha);
+    console.log(car.velocity.x);
+    console.log(dt);
 
     //set the regular cars array
     const car2 = cars[car.hash];

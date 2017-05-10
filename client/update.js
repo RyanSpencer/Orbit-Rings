@@ -7,7 +7,6 @@ const update = (data) => {
   if((cars[data.hash].lastUpdate >= data.lastUpdate)) {
     return;
   }
-
   const car = cars[data.hash];
   car.prevX = data.prevX;
   car.prevY = data.prevY;
