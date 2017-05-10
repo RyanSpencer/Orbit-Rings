@@ -20,6 +20,12 @@ p{
   font-family: sans-serif;
 }
 canvas{
+  margin-left: 2%;
+  margin-bottom: 20px;
+  float: left;
+  box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
+}
+img{
   margin-left: 5%;
   margin-bottom: 20px;
   float: left;
