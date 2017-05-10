@@ -25,12 +25,6 @@ canvas{
   float: left;
   box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
 }
-img{
-  margin-left: 5%;
-  margin-bottom: 20px;
-  float: left;
-  box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
-}
 label{
   font-family: 'Jura', 'Titillium Web', sans-serif;
   font-size: 1.5em;
@@ -82,4 +76,23 @@ form{
     display: block;
     float: initial;
   }  
+}
+#leftAd{
+  margin-left: 5%;
+  margin-bottom: 20px;
+  float: left;
+  box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
+}
+#topAd{
+  margin-left: 5%;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
+}
+@media (max-width: 1497px){
+	#leftAd{
+		display: none;	
+	}
+	#topAd{
+		display: block;
+	}
 }
