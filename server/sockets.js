@@ -217,9 +217,9 @@ const handleHostStart = (socket) => {
   io.sockets.in(socket.room).emit('hostStart');
 };
 
-const handleEndGame = (socket) =>{
-	console.log('in handle end game');
-	io.sockets.in(socket.room).emit('endGame');
+const handleEndGame = (socket) => {
+  console.log('in handle end game');
+  io.sockets.in(socket.room).emit('endGame');
 };
 
 const setupSockets = (ioServer) => {
@@ -237,8 +237,8 @@ const setupSockets = (ioServer) => {
     socket.on('disconnect', data => handleDisconnect(socket, data));
 
     socket.on('hostStart', data => handleHostStart(socket, data));
-		
-		socket.on('endGame', data => handleEndGame(socket,data));
+
+    socket.on('endGame', data => handleEndGame(socket, data));
   });
 };
 
