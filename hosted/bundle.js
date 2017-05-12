@@ -529,7 +529,7 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
     for (var i = 0; i < keys.length; i++) {
 
       var currentSocket = data.roomObj[keys[i]];
-      console.log('currentSocket: ' + currentSocket);
+      console.dir('currentSocket: ' + currentSocket);
 
       var playerAvatar = document.createElement("div");
       roomSetupDiv.appendChild(playerAvatar);
@@ -538,6 +538,9 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
 
       if (currentSocket.host) {
         playerAvatar.innerHTML += "<p id='host'>Host</p>";
+      } else if (currentSocket.color == data.roomObj[hash].color) {
+        console.log("i am groot");
+        playerAvatar.innerHTML += "<p id='isYou'> > </p>";
       }
       playerAvatar.setAttribute("class", "playerAvatar");
 
