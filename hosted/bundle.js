@@ -52,195 +52,195 @@ var debug = false;
 //Draws everthing to the screen
 var drawCars = function drawCars() {
 
-	if (gameState === GAME_STATE.LOBBY) {
+  if (gameState === GAME_STATE.LOBBY) {
 
-		ctx.save();
-		ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		if (isHost) {
-			fillText("Start when ready", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
-		} else {
-			fillText("Waiting for host to start the game", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
-		}
-		ctx.restore();
-	} else if (gameState === GAME_STATE.END) {
-		ctx.save();
-		ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if (isHost) {
+      fillText("Start when ready", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    } else {
+      fillText("Waiting for host to start the game", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    }
+    ctx.restore();
+  } else if (gameState === GAME_STATE.END) {
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-		fillText("Game Over", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    fillText("Game Over", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
 
-		ctx.restore();
-	} else {
-		var deltaTime = calculateDeltaTime();
+    ctx.restore();
+  } else {
+    var deltaTime = calculateDeltaTime();
 
-		moveCars(deltaTime);
+    moveCars(deltaTime);
 
-		checkCollisions(deltaTime);
+    checkCollisions(deltaTime);
 
-		//Draw background
-		ctx.save();
-		ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    //Draw background
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
-		//Draw the sun
-		ctx.translate(sun.x, sun.y);
-		if (debug) {
-			//Draw the area of gravitational effect if in debug
-			ctx.fillStyle = "yellow";
-			ctx.beginPath();
-			ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
-			ctx.closePath();
-			ctx.fill();
-		}
-		//Draw the acual sun
-		ctx.fillStyle = "orange";
-		ctx.beginPath();
-		ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
-		ctx.closePath();
-		ctx.fill();
-		if (debug) {
-			//If in debug, draw arrows to show direction of gravitational field
-			for (var i = 0; i < 4; i++) {
-				ctx.rotate(Math.PI / 2);
-				ctx.strokeStyle = "black";
-				ctx.beginPath();
-				ctx.moveTo(-20, -60);
-				ctx.lineTo(20, -60);
-				ctx.lineTo(17, -63);
-				ctx.moveTo(20, -60);
-				ctx.lineTo(17, -57);
-				ctx.stroke();
-				ctx.closePath();
-			}
-		}
+    //Draw the sun
+    ctx.translate(sun.x, sun.y);
+    if (debug) {
+      //Draw the area of gravitational effect if in debug
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(0, 0, sun.size, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.fill();
+    }
+    //Draw the acual sun
+    ctx.fillStyle = "orange";
+    ctx.beginPath();
+    ctx.arc(0, 0, sun.core, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    if (debug) {
+      //If in debug, draw arrows to show direction of gravitational field
+      for (var i = 0; i < 4; i++) {
+        ctx.rotate(Math.PI / 2);
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.moveTo(-20, -60);
+        ctx.lineTo(20, -60);
+        ctx.lineTo(17, -63);
+        ctx.moveTo(20, -60);
+        ctx.lineTo(17, -57);
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
 
-		ctx.restore();
+    ctx.restore();
 
-		var keys = Object.keys(cars);
+    var keys = Object.keys(cars);
 
-		//console.log(cars[keys[0]]);
+    //console.log(cars[keys[0]]);
 
-		var aliveCount = 0;
+    var aliveCount = 0;
 
-		for (var _i = 0; _i < keys.length; _i++) {
-			var car = cars[keys[_i]];
+    for (var _i = 0; _i < keys.length; _i++) {
+      var car = cars[keys[_i]];
 
-			console.log(car.state);
+      console.log(car.state);
 
-			//If the car is dead don't draw it and add to dead c
-			if (car.state !== CAR_STATE.DEAD) {
+      //If the car is dead don't draw it and add to dead c
+      if (car.state !== CAR_STATE.DEAD) {
 
-				aliveCount++;
+        aliveCount++;
 
-				ctx.save();
-				ctx.fillStyle = car.fillStyle;
-				ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
-				ctx.restore();
-				if (debug) {
-					//Show the origin of each rectangle for developer aid
-					ctx.save();
-					ctx.translate(car.x, car.y);
-					ctx.beginPath();
-					ctx.fillStyle = "white";
-					ctx.arc(0, 0, 3, 0, Math.PI * 2);
-					ctx.closePath();
-					ctx.fill();
+        ctx.save();
+        ctx.fillStyle = car.fillStyle;
+        ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
+        ctx.restore();
+        if (debug) {
+          //Show the origin of each rectangle for developer aid
+          ctx.save();
+          ctx.translate(car.x, car.y);
+          ctx.beginPath();
+          ctx.fillStyle = "white";
+          ctx.arc(0, 0, 3, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.fill();
 
-					//Show velocity
-					ctx.beginPath();
-					ctx.globalAlpha = 0.7;
-					ctx.strokeStyle = "blue";
-					ctx.translate(car.size, car.size);
-					ctx.moveTo(0, 0);
-					ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
-					ctx.closePath();
-					ctx.stroke();
+          //Show velocity
+          ctx.beginPath();
+          ctx.globalAlpha = 0.7;
+          ctx.strokeStyle = "blue";
+          ctx.translate(car.size, car.size);
+          ctx.moveTo(0, 0);
+          ctx.lineTo(car.velocity.x * 10, car.velocity.y * 10);
+          ctx.closePath();
+          ctx.stroke();
 
-					//show accleration
-					ctx.beginPath();
-					ctx.strokeStyle = "Red";
-					ctx.moveTo(0, 0);
-					ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
-					ctx.closePath();
-					ctx.stroke();
-					ctx.restore();
-				}
-			}
-		}
+          //show accleration
+          ctx.beginPath();
+          ctx.strokeStyle = "Red";
+          ctx.moveTo(0, 0);
+          ctx.lineTo(car.acceleration.x * 10, car.acceleration.y * 10);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
 
-		if (isHost && aliveCount <= 1 && keys.length > 1) {
-			console.log(keys.length);
-			console.log("1 or less players alive");
-			socket.emit('endGame');
-		}
+    if (isHost && aliveCount <= 1 && keys.length > 1) {
+      console.log(keys.length);
+      console.log("1 or less players alive");
+      socket.emit('endGame');
+    }
 
-		drawHUD();
-	}
+    drawHUD();
+  }
 
-	animationFrame = requestAnimationFrame(drawCars);
+  animationFrame = requestAnimationFrame(drawCars);
 };
 
 var drawHUD = function drawHUD() {
 
-	ctx.save();
-	//Text for debug information
-	if (debug) {
-		fillText("Debug Info:Press N to toggle Debug", 10, 30, "20pt 'Exo 2'", "white");
+  ctx.save();
+  //Text for debug information
+  if (debug) {
+    fillText("Debug Info:Press N to toggle Debug", 10, 30, "20pt 'Exo 2'", "white");
 
-		ctx.strokeStyle = 'white';
-		ctx.beginPath();
-		ctx.moveTo(canvas.width / 2, 0);
-		ctx.lineTo(canvas.width / 2, canvas.height);
-		ctx.stroke();
+    ctx.strokeStyle = 'white';
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.stroke();
 
-		ctx.beginPath();
-		ctx.moveTo(0, canvas.height / 2);
-		ctx.lineTo(canvas.width, canvas.height / 2);
-		ctx.stroke();
-	}
-	//Car health stacked from the bottom dynamically so the last player will always next to the bottom of the canvas
-	var keys = Object.keys(cars);
-	for (var i = keys.length - 1; i >= 0; i--) {
-		if (cars[keys[i]].state === CAR_STATE.DEAD) continue;
-		fillText("Player " + (i + 1) + " Population: " + cars[keys[i]].health.toFixed(1) + " million", 10, HEIGHT - (keys.length - i) * 30, "20pt 'Exo 2'", cars[keys[i]].fillStyle);
-	}
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+  }
+  //Car health stacked from the bottom dynamically so the last player will always next to the bottom of the canvas
+  var keys = Object.keys(cars);
+  for (var i = keys.length - 1; i >= 0; i--) {
+    if (cars[keys[i]].state === CAR_STATE.DEAD) continue;
+    fillText("Player " + (i + 1) + " Population: " + cars[keys[i]].health.toFixed(1) + " million", 10, HEIGHT - (keys.length - i) * 30, "20pt 'Exo 2'", cars[keys[i]].fillStyle);
+  }
 
-	ctx.restore();
+  ctx.restore();
 };
 
 //Taken from Boomshine to display text easily
 var fillText = function fillText(string, x, y, css, color) {
 
-	ctx.save();
-	// https://developer.mozilla.org/en-US/docs/Web/CSS/font
-	ctx.font = css;
-	ctx.fillStyle = color;
-	ctx.fillText(string, x, y);
-	ctx.restore();
+  ctx.save();
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/font
+  ctx.font = css;
+  ctx.fillStyle = color;
+  ctx.fillText(string, x, y);
+  ctx.restore();
 };
 
 var drawIntroScreen = function drawIntroScreen() {
-	setTimeout(function () {
-		ctx.save();
-		ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
-		ctx.restore();
-	}, 300);
+  setTimeout(function () {
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.restore();
+  }, 300);
 };
 
 var drawWaitingScreen = function drawWaitingScreen() {
-	setTimeout(function () {
-		ctx.save();
-		ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		fillText("Waiting", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
-		ctx.restore();
-	}, 300);
+  setTimeout(function () {
+    ctx.save();
+    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    fillText("Waiting", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.restore();
+  }, 300);
 };
 'use strict';
 
@@ -394,29 +394,36 @@ var updateJoinableRoomsC = function updateJoinableRoomsC(data) {
         var keys = Object.keys(data);
 
         var _loop = function _loop(i) {
+
           console.log(data[keys[i]]);
-          var numInRoom = Object.keys(data[keys[i]]).length;
-          console.log(Object.keys(data[keys[i]]));
+          if (!data[keys[i]].inGame) {
+            var numInRoom = Object.keys(data[keys[i]]).length;
+            console.log(Object.keys(data[keys[i]]));
 
-          //create button for each existing room 
-          var roomButton = document.createElement('input');
+            //create button for each existing room 
+            var roomButton = document.createElement('input');
 
-          roomButton.setAttribute('class', 'button');
-          roomButton.setAttribute('type', 'button');
-          roomButton.setAttribute('value', keys[i] + '(' + numInRoom + '/8)');
+            roomButton.setAttribute('class', 'button');
+            roomButton.setAttribute('type', 'button');
+            roomButton.setAttribute('value', keys[i] + '(' + numInRoom + '/8)');
 
-          //add a click event that will add them to the room
-          roomButton.addEventListener('click', function (e) {
-            console.log("clicked a battle to join");
-            onJoin(keys[i]);
-          });
+            //add a click event that will add them to the room
+            roomButton.addEventListener('click', function (e) {
+              console.log("clicked a battle to join");
+              onJoin(keys[i]);
+            });
 
-          //append it to battleList
-          battleList.appendChild(roomButton);
+            //append it to battleList
+            battleList.appendChild(roomButton);
+          }
         };
 
         for (var i = 0; i < keys.length; i++) {
           _loop(i);
+        }
+
+        if (battleList.innerHTML === '') {
+          battleList.innerHTML = '<p>There are no active battles at the moment.<br />Start your own battle!</p>';
         }
       })();
     }
@@ -432,12 +439,18 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
     var roomSetupDiv = document.querySelector("#roomSetup");
     roomSetupDiv.innerHTML = '<h2><em>Battle of</br>' + data.roomName + '</em></h2>';
 
+    roomSetupDiv.innerHTML += '<input id="leaveButton" class="button" type="button" value="Leave Room">';
+
     //start button for host
     if (isHost) {
       roomSetupDiv.innerHTML += '<input id="startButton" class="button" type="button" value="Start the Game">';
 
       var startButton = document.querySelector("#startButton");
+      console.log("button clicked");
+
       startButton.addEventListener('click', function (e) {
+        console.log("button clicked");
+
         if (Object.keys(data.roomObj).length < 4) {
           startButton.value = "Must have at least 4 players";
           setTimeout(function () {
@@ -450,6 +463,8 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
         }
       });
     }
+
+    document.querySelector("#leaveButton").onclick = leaveRoom;
 
     var keys = Object.keys(data.roomObj);
     for (var i = 0; i < keys.length; i++) {
@@ -492,6 +507,30 @@ var onJoin = function onJoin(roomName) {
   socket.on('hostStart', hostStart);
   socket.on('endGame', endGame);
   socket.on('updateHealth', health);
+};
+
+var leaveRoom = function leaveRoom() {
+
+  location.reload();
+
+  //  console.log("in leave room");
+  //
+  //  const roomSetupEle = document.querySelector("#roomSetup");
+  //
+  //  roomSetupEle.innerHTML =  '<div id="hostRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="hostRoom">Start a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<input id="hostName" name="hostRoom" type="text" placeholder="Battle Name">';
+  //  roomSetupEle.innerHTML += '<input id="hostButton" class="button" type="button" value="Begin!">';
+  //  roomSetupEle.innerHTML += '</div>';
+  //  roomSetupEle.innerHTML += '<br />';
+  //  roomSetupEle.innerHTML += '<div id="joinRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="joinRoom">Join a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<div id="battleList">';
+  //
+  //  socket.emit('dc');
+  //  cancelAnimationFrame(animationFrame);
+  //
+  //  init();
 };
 
 //Opening function
@@ -781,7 +820,7 @@ var calculateDeltaTime = function calculateDeltaTime() {
     lastTime = now;
     return 1 / fps;
 };
-"use strict";
+'use strict';
 
 var update = function update(data) {
   if (!cars[data.hash]) {
@@ -810,14 +849,7 @@ var update = function update(data) {
 };
 
 var hostLeft = function hostLeft() {
-  socket.disconnect();
-  cancelAnimationFrame(animationFrame);
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  fillText("Host left.", WIDTH / 2, HEIGHT / 2 - 210, "20pt Jura", "white");
-  fillText("Reload for a new game.", WIDTH / 2, HEIGHT / 2 - 170, "20pt Jura", "white");
-  ctx.restore();
+  leaveRoom();
 };
 
 var removeUser = function removeUser(data) {

@@ -218,17 +218,26 @@ const handleDisconnect = (socket) => {
 
 const handleHostStart = (socket) => {
   io.sockets.in(socket.room).emit('hostStart');
+  roomsObj[socket.room].inGame = true;
 };
 
 const handleEndGame = (socket) => {
   console.log('in handle end game');
   io.sockets.in(socket.room).emit('endGame');
+  roomsObj[socket.room].inGame = false;
+};
+
+const handleForcedDC = (socket) => {
+  console.log('forced dc');
+  socket.disconnect();
 };
 
 const setupSockets = (ioServer) => {
   io = ioServer;
 
   io.on('connection', (sock) => {
+    console.log('someone joined');
+
     const socket = sock;
 
     updateJoinableRoomsS(socket);
@@ -242,6 +251,8 @@ const setupSockets = (ioServer) => {
     socket.on('hostStart', data => handleHostStart(socket, data));
 
     socket.on('endGame', data => handleEndGame(socket, data));
+
+    socket.on('dc', data => handleForcedDC(socket, data));
   });
 };
 
