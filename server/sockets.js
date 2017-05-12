@@ -30,13 +30,13 @@ const roomsObj = {};
 
     -by Ryan don't call me steven ma Spencer
 */
-const colors = ['red', 'orangered', 'green', 'yellow', 'purple', 'lightblue', 'pink', 'teal'];
+const colors = ['red', 'orangered', 'green', 'yellow', 'purple', 'royalblue', 'pink', 'teal'];
 
 const positionCar = (carInRoom) => {
   let degree = 45;// 360/8
   const radiusMag = 200;
-  const centerX = (1280 / 2) - 12.5;
-  const centerY = (720 / 2) - 12.5;
+  const centerX = (1280 / 2) - 20;
+  const centerY = (720 / 2) - 20;
   degree *= carInRoom + 4;
 
   const radiusX = Math.cos(degree * (Math.PI / 180)) * radiusMag;
@@ -149,7 +149,7 @@ const configureSocket = (sock, data) => {
 
   car.fillStyle = colors[Object.keys(roomsObj[data.roomName]).length - 1];
   car.spriteColor = car.fillStyle;
-  
+
   //
   roomsObj[data.roomName][hash].color = car.fillStyle;
   // client sends the name of the room they want to join
@@ -222,17 +222,26 @@ const handleDisconnect = (socket) => {
 
 const handleHostStart = (socket) => {
   io.sockets.in(socket.room).emit('hostStart');
+  roomsObj[socket.room].inGame = true;
 };
 
 const handleEndGame = (socket) => {
   console.log('in handle end game');
   io.sockets.in(socket.room).emit('endGame');
+  roomsObj[socket.room].inGame = false;
+};
+
+const handleForcedDC = (socket) => {
+  console.log('forced dc');
+  socket.disconnect();
 };
 
 const setupSockets = (ioServer) => {
   io = ioServer;
 
   io.on('connection', (sock) => {
+    console.log('someone joined');
+
     const socket = sock;
 
     updateJoinableRoomsS(socket);
@@ -246,6 +255,8 @@ const setupSockets = (ioServer) => {
     socket.on('hostStart', data => handleHostStart(socket, data));
 
     socket.on('endGame', data => handleEndGame(socket, data));
+
+    socket.on('dc', data => handleForcedDC(socket, data));
   });
 };
 

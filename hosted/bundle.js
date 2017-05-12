@@ -1,5 +1,60 @@
 "use strict";
 
+var music = true;
+var menuMusicEle = void 0;
+var gameMusicEle = void 0;
+
+var playMenuMusic = function playMenuMusic() {
+  menuMusicEle.play();
+  gameMusicEle.pause();
+};
+
+var playGameMusic = function playGameMusic() {
+  menuMusicEle.pause();
+  gameMusicEle.play();
+};
+
+var toggleMusic = function toggleMusic() {
+  console.log("toggling music");
+
+  var sound = document.querySelector("#sound");
+  var mute = document.querySelector("#mute");
+
+  if (music) {
+    //mute music
+    menuMusicEle.muted = true;
+    gameMusicEle.muted = true;
+
+    music = false;
+
+    sound.style.display = "none";
+    mute.style.display = "block";
+  } else {
+    //unmute music
+    menuMusicEle.muted = false;
+    gameMusicEle.muted = false;
+
+    music = true;
+
+    sound.style.display = "block";
+    mute.style.display = "none";
+  }
+};
+
+var audioInit = function audioInit() {
+  //get audio eles
+  menuMusicEle = document.querySelector("#menuAudio");
+  gameMusicEle = document.querySelector("#gameAudio");
+
+  //start the music
+  playMenuMusic();
+
+  document.querySelector("#audioButton").addEventListener('click', function () {
+    toggleMusic();
+  });
+};
+"use strict";
+
 //Enable for live debug
 var debug = false;
 
@@ -83,6 +138,7 @@ var drawCars = function drawCars() {
 
       //console.log(car.state);
 
+
       //If the car is dead don't draw it and add to dead c
       if (car.state !== CAR_STATE.DEAD) {
 
@@ -91,8 +147,6 @@ var drawCars = function drawCars() {
         //const image = avatars[0];
 
         ctx.save();
-
-        console.dir(car.spriteColor);
 
         if (car.direction == directions.DOWNRIGHT) {
           //downright
@@ -198,8 +252,10 @@ var drawIntroScreen = function drawIntroScreen() {
     ctx.save();
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.shadowBlur = 10;
+    fillText("Start or Join a Battle to Begin Playing.", WIDTH / 2, HEIGHT / 2 - 50, "20pt Jura", "white");
+    fillText("Use WASD to crash into other players and ", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    fillText("annihilate their planet's populations.", WIDTH / 2, HEIGHT / 2 + 50, "20pt Jura", "white");
     ctx.restore();
   }, 300);
 };
@@ -247,6 +303,9 @@ var movementUpdate = function movementUpdate(data) {
   car.fillStyle = data.fillStyle;
   car.size = data.size;
   car.health = data.health;
+  car.spriteColor = data.spriteColor;
+  car.image = data.image;
+  car.direction = data.direction;
 
   socket.emit('hostUpdatedMovement', hosted[data.hash]);
 };
@@ -276,7 +335,7 @@ var avatars = {
   green: greenSprite,
   yellow: yellowSprite,
   purple: purpleSprite,
-  lightblue: lightBlueSprite,
+  royalblue: lightBlueSprite,
   pink: pinkSprite,
   teal: tealSprite
 };
@@ -323,18 +382,22 @@ var keyDownHandler = function keyDownHandler(e) {
   // W OR UP
   if (keyPressed === 87 || keyPressed === 38) {
     car.moveUp = true;
+    e.preventDefault(); //keeps page from scrolling when arrows
   }
   // A OR LEFT
   else if (keyPressed === 65 || keyPressed === 37) {
       car.moveLeft = true;
+      e.preventDefault();
     }
     // S OR DOWN
     else if (keyPressed === 83 || keyPressed === 40) {
         car.moveDown = true;
+        e.preventDefault();
       }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
           car.moveRight = true;
+          e.preventDefault();
         }
 
   return false;
@@ -390,29 +453,36 @@ var updateJoinableRoomsC = function updateJoinableRoomsC(data) {
         var keys = Object.keys(data);
 
         var _loop = function _loop(i) {
+
           console.log(data[keys[i]]);
-          var numInRoom = Object.keys(data[keys[i]]).length;
-          console.log(Object.keys(data[keys[i]]));
+          if (!data[keys[i]].inGame) {
+            var numInRoom = Object.keys(data[keys[i]]).length;
+            console.log(Object.keys(data[keys[i]]));
 
-          //create button for each existing room 
-          var roomButton = document.createElement('input');
+            //create button for each existing room 
+            var roomButton = document.createElement('input');
 
-          roomButton.setAttribute('class', 'button');
-          roomButton.setAttribute('type', 'button');
-          roomButton.setAttribute('value', keys[i] + '(' + numInRoom + '/8)');
+            roomButton.setAttribute('class', 'button');
+            roomButton.setAttribute('type', 'button');
+            roomButton.setAttribute('value', keys[i] + '(' + numInRoom + '/8)');
 
-          //add a click event that will add them to the room
-          roomButton.addEventListener('click', function (e) {
-            console.log("clicked a battle to join");
-            onJoin(keys[i]);
-          });
+            //add a click event that will add them to the room
+            roomButton.addEventListener('click', function (e) {
+              console.log("clicked a battle to join");
+              onJoin(keys[i]);
+            });
 
-          //append it to battleList
-          battleList.appendChild(roomButton);
+            //append it to battleList
+            battleList.appendChild(roomButton);
+          }
         };
 
         for (var i = 0; i < keys.length; i++) {
           _loop(i);
+        }
+
+        if (battleList.innerHTML === '') {
+          battleList.innerHTML = '<p>There are no active battles at the moment.<br />Start your own battle!</p>';
         }
       })();
     }
@@ -428,12 +498,18 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
     var roomSetupDiv = document.querySelector("#roomSetup");
     roomSetupDiv.innerHTML = '<h2><em>Battle of</br>' + data.roomName + '</em></h2>';
 
+    roomSetupDiv.innerHTML += '<input id="leaveButton" class="button" type="button" value="Leave Room">';
+
     //start button for host
     if (isHost) {
       roomSetupDiv.innerHTML += '<input id="startButton" class="button" type="button" value="Start the Game">';
 
       var startButton = document.querySelector("#startButton");
+      console.log("button clicked");
+
       startButton.addEventListener('click', function (e) {
+        console.log("button clicked");
+
         if (Object.keys(data.roomObj).length < 4) {
           startButton.value = "Must have at least 4 players";
           setTimeout(function () {
@@ -446,6 +522,8 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
         }
       });
     }
+
+    document.querySelector("#leaveButton").onclick = leaveRoom;
 
     var keys = Object.keys(data.roomObj);
     for (var i = 0; i < keys.length; i++) {
@@ -462,16 +540,24 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
         playerAvatar.innerHTML += "<p id='host'>Host</p>";
       }
       playerAvatar.setAttribute("class", "playerAvatar");
+
+      var avatarImg = document.createElement("div");
+      avatarImg.appendChild(avatars[currentSocket.color]);
+      avatarImg.setAttribute("class", "avatarImg");
+      roomSetupDiv.appendChild(avatarImg);
     }
   }
 };
 
 var hostStart = function hostStart() {
   gameState = GAME_STATE.INGAME;
+  playGameMusic();
 };
 
 var endGame = function endGame() {
   gameState = GAME_STATE.END;
+
+  playMenuMusic();
 };
 
 var onJoin = function onJoin(roomName) {
@@ -488,8 +574,34 @@ var onJoin = function onJoin(roomName) {
   socket.on('updateHealth', health);
 };
 
+var leaveRoom = function leaveRoom() {
+
+  location.reload();
+
+  //  console.log("in leave room");
+  //
+  //  const roomSetupEle = document.querySelector("#roomSetup");
+  //
+  //  roomSetupEle.innerHTML =  '<div id="hostRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="hostRoom">Start a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<input id="hostName" name="hostRoom" type="text" placeholder="Battle Name">';
+  //  roomSetupEle.innerHTML += '<input id="hostButton" class="button" type="button" value="Begin!">';
+  //  roomSetupEle.innerHTML += '</div>';
+  //  roomSetupEle.innerHTML += '<br />';
+  //  roomSetupEle.innerHTML += '<div id="joinRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="joinRoom">Join a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<div id="battleList">';
+  //
+  //  socket.emit('dc');
+  //  cancelAnimationFrame(animationFrame);
+  //
+  //  init();
+};
+
 //Opening function
 var init = function init() {
+  audioInit();
+
   //Create and access canvas
   canvas = document.querySelector('canvas');
 
@@ -803,7 +915,7 @@ var calculateDeltaTime = function calculateDeltaTime() {
   lastTime = now;
   return 1 / fps;
 };
-"use strict";
+'use strict';
 
 var update = function update(data) {
   if (!cars[data.hash]) {
@@ -829,17 +941,12 @@ var update = function update(data) {
   car.fillStyle = car.fillStyle;
   car.size = car.size;
   car.health = car.health;
+  car.direction = data.direction;
+  car.image = car.image;
 };
 
 var hostLeft = function hostLeft() {
-  socket.disconnect();
-  cancelAnimationFrame(animationFrame);
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  fillText("Host left.", WIDTH / 2, HEIGHT / 2 - 210, "20pt Jura", "white");
-  fillText("Reload for a new game.", WIDTH / 2, HEIGHT / 2 - 170, "20pt Jura", "white");
-  ctx.restore();
+  leaveRoom();
 };
 
 var removeUser = function removeUser(data) {
@@ -870,7 +977,6 @@ var confirmHost = function confirmHost() {
 var setUser = function setUser(data) {
   hash = data.hash;
   data.image = avatars[data.spriteColor];
-  //data.image.src = `${data.spriteColor}`;//*************************************************************************************LOLOLOLOL
   cars[hash] = data;
   console.log('This User:');
   console.log(cars[hash]);
@@ -879,6 +985,10 @@ var setUser = function setUser(data) {
     hosted[hash] = data;
   }
   gameState === GAME_STATE.INGAME;
+
+  //call to update before host clicks ready so they don't kermit death >:(
+  socket.emit('movementUpdate', data);
+
   requestAnimationFrame(drawCars);
 };
 

@@ -18,7 +18,7 @@ class Car {
     this.direction = 0;
     this.spriteWidth = 512;
     this.spriteHeight = 512;
-    this.spriteColor = "red";
+    this.spriteColor = 'red';
     this.velocity = {};
     this.velocity.x = 0;
     this.velocity.y = 0;

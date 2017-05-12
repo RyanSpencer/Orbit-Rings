@@ -22,17 +22,12 @@ const update = (data) => {
   car.fillStyle = car.fillStyle;
   car.size = car.size;
   car.health = car.health;
+  car.direction = data.direction; 
+  car.image = car.image;
 };
 
 const hostLeft = () => {
-  socket.disconnect();
-  cancelAnimationFrame(animationFrame);
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  fillText("Host left.", WIDTH/2, HEIGHT/2-210, "20pt Jura", "white");
-  fillText("Reload for a new game.", WIDTH/2, HEIGHT/2-170, "20pt Jura", "white");
-  ctx.restore();
+  leaveRoom();  
 };
 
 const removeUser = (data) => {
@@ -64,7 +59,6 @@ const confirmHost = () => {
 const setUser = (data) => {
   hash = data.hash;
   data.image = avatars[data.spriteColor];
-  //data.image.src = `${data.spriteColor}`;//*************************************************************************************LOLOLOLOL
   cars[hash] = data;
   console.log('This User:')
   console.log(cars[hash]);
@@ -73,6 +67,10 @@ const setUser = (data) => {
     hosted[hash] = data;
   }
   gameState === GAME_STATE.INGAME;
+  
+  //call to update before host clicks ready so they don't kermit death >:(
+  socket.emit('movementUpdate', data);
+  
   requestAnimationFrame(drawCars);
 };
 

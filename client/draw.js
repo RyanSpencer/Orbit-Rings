@@ -80,19 +80,19 @@ const drawCars = () => {
     for (let i = 0; i < keys.length; i++) {
       const car = cars[keys[i]];
 
+
       //console.log(car.state);
+
 
       //If the car is dead don't draw it and add to dead c
       if (car.state !== CAR_STATE.DEAD){
 
         aliveCount++;
-        
+
         //const image = avatars[0];
-        
+
         ctx.save();
 
-        console.dir(car.spriteColor);
-        
         if(car.direction == directions.DOWNRIGHT){ //downright
           ctx.drawImage(
             avatars[car.spriteColor],
@@ -219,8 +219,10 @@ const drawIntroScreen = () =>{
     ctx.save();
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    fillText("Start or Join a Battle to Begin Playing", WIDTH/2, HEIGHT/2, "20pt Jura", "white");
+    ctx.shadowBlur = 10;
+    fillText("Start or Join a Battle to Begin Playing.", WIDTH/2, HEIGHT/2 - 50, "20pt Jura", "white");
+    fillText("Use WASD to crash into other players and ", WIDTH/2, HEIGHT/2, "20pt Jura", "white");
+    fillText("annihilate their planet's populations.", WIDTH/2, HEIGHT/2 + 50, "20pt Jura", "white");
     ctx.restore();
   }, 300);
 }
