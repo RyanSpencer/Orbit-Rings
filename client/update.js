@@ -63,6 +63,8 @@ const confirmHost = () => {
 
 const setUser = (data) => {
   hash = data.hash;
+  data.image = avatars[data.spriteColor];
+  //data.image.src = `${data.spriteColor}`;//*************************************************************************************LOLOLOLOL
   cars[hash] = data;
   console.log('This User:')
   console.log(cars[hash]);

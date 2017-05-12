@@ -7,7 +7,33 @@ let hash;
 let isHost = false;
 let animationFrame;
 const bgImage = new Image();
+const redSprite = new Image();
+const orangeSprite = new Image();
+const greenSprite = new Image();
+const yellowSprite = new Image();
+const purpleSprite = new Image();
+const lightBlueSprite = new Image();
+const pinkSprite = new Image();
+const tealSprite = new Image();
 
+
+
+const avatars = {
+  red: redSprite,
+  orangered: orangeSprite,
+  green: greenSprite,
+  yellow: yellowSprite,
+  purple: purpleSprite,
+  lightblue: lightBlueSprite,
+  pink: pinkSprite,
+  teal: tealSprite
+};
+const directions = {
+  DOWNRIGHT: 0, 
+  DOWNLEFT: 1,
+  UPRIGHT: 2,
+  UPLEFT: 3,
+};
 let hosted = {};
 //The Various Game States and Car States
 const GAME_STATE = Object.freeze({
@@ -147,7 +173,7 @@ const updateRoomStatusC = (data) =>{
     //start button for host
     if(isHost){
       roomSetupDiv.innerHTML += `<input id="startButton" class="button" type="button" value="Start the Game">`;
-      
+
       const startButton = document.querySelector("#startButton");
       startButton.addEventListener('click', (e)=>{
         if (Object.keys(data.roomObj).length < 4) {
@@ -160,11 +186,11 @@ const updateRoomStatusC = (data) =>{
           console.log('host clicked start');
           socket.emit('hostStart');
           roomSetupDiv.removeChild(startButton);
-          }
+        }
       });
     }
 
-  
+
 
     const keys = Object.keys(data.roomObj);
     for(let i = 0; i < keys.length; i++){
@@ -190,7 +216,7 @@ const hostStart = () =>{
 };
 
 const endGame = () =>{
-	gameState = GAME_STATE.END;
+  gameState = GAME_STATE.END;
 };
 
 const onJoin = (roomName) =>{
@@ -225,6 +251,17 @@ const init = () => {
   //set backgroundImage
   bgImage.src = "./assets/media/background.jpg";
   //SOURCE -> https://pixabay.com/en/star-points-stains-effect-space-1626550/
+
+  //load in sprites 
+  orangeSprite.src = "./assets/media/orangeSprite.png";
+  redSprite.src = "./assets/media/redSprite.png";
+  greenSprite.src = "./assets/media/greenSprite.png";
+  yellowSprite.src = "./assets/media/yellowSprite.png";
+  purpleSprite.src = "./assets/media/purpleSprite.png";
+  lightBlueSprite.src = "./assets/media/lightBlueSprite.png";
+  pinkSprite.src = "./assets/media/pinkSprite.png";
+  tealSprite.src = "./assets/media/tealSprite.png";
+
 
   drawIntroScreen();
   eventHandler();
