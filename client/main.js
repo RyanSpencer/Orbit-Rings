@@ -150,10 +150,18 @@ const updateRoomStatusC = (data) =>{
       
       const startButton = document.querySelector("#startButton");
       startButton.addEventListener('click', (e)=>{
-      console.log('host clicked start');
-      socket.emit('hostStart');
-      roomSetupDiv.removeChild(startButton);
-    });
+        if (Object.keys(data.roomObj).length < 4) {
+          startButton.value = "Must have at least 4 players";
+          setTimeout(() => {
+            startButton.value = "Start the Game";
+          }, 1500);
+        }
+        else {
+          console.log('host clicked start');
+          socket.emit('hostStart');
+          roomSetupDiv.removeChild(startButton);
+          }
+      });
     }
 
   
@@ -195,7 +203,8 @@ const onJoin = (roomName) =>{
   socket.on('left', removeUser);
   socket.on('hostLeft', hostLeft);
   socket.on('hostStart', hostStart);
-	socket.on('endGame', endGame);
+  socket.on('endGame', endGame);
+  socket.on('updateHealth',health);  
 };
 
 //Opening function
