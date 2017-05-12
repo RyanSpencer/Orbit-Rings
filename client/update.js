@@ -25,14 +25,7 @@ const update = (data) => {
 };
 
 const hostLeft = () => {
-  socket.disconnect();
-  cancelAnimationFrame(animationFrame);
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  fillText("Host left.", WIDTH/2, HEIGHT/2-210, "20pt Jura", "white");
-  fillText("Reload for a new game.", WIDTH/2, HEIGHT/2-170, "20pt Jura", "white");
-  ctx.restore();
+  leaveRoom();  
 };
 
 const removeUser = (data) => {

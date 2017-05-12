@@ -111,25 +111,33 @@ const updateJoinableRoomsC = (data) =>{
     }else{
       const keys = Object.keys(data);
       for(let i = 0; i < keys.length; i++){
+
         console.log(data[keys[i]]);
-        const numInRoom = Object.keys(data[keys[i]]).length;
-        console.log(Object.keys(data[keys[i]]));
+        if(!data[keys[i]].inGame){
+          const numInRoom = Object.keys(data[keys[i]]).length;
+          console.log(Object.keys(data[keys[i]]));
 
-        //create button for each existing room 
-        const roomButton = document.createElement('input');
+          //create button for each existing room 
+          const roomButton = document.createElement('input');
 
-        roomButton.setAttribute('class', 'button');
-        roomButton.setAttribute('type', 'button');
-        roomButton.setAttribute('value', `${keys[i]}(${numInRoom}/8)`);
+          roomButton.setAttribute('class', 'button');
+          roomButton.setAttribute('type', 'button');
+          roomButton.setAttribute('value', `${keys[i]}(${numInRoom}/8)`);
 
-        //add a click event that will add them to the room
-        roomButton.addEventListener('click', (e)=>{
-          console.log("clicked a battle to join");
-          onJoin(keys[i]);
-        });
+          //add a click event that will add them to the room
+          roomButton.addEventListener('click', (e)=>{
+            console.log("clicked a battle to join");
+            onJoin(keys[i]);
+          });
 
-        //append it to battleList
-        battleList.appendChild(roomButton);
+          //append it to battleList
+          battleList.appendChild(roomButton);
+        }
+
+      }
+      
+      if(battleList.innerHTML === ''){
+        battleList.innerHTML = '<p>There are no active battles at the moment.<br />Start your own battle!</p>';
       }
     }
   }
@@ -144,12 +152,18 @@ const updateRoomStatusC = (data) =>{
     const roomSetupDiv = document.querySelector("#roomSetup");
     roomSetupDiv.innerHTML = `<h2><em>Battle of</br>${data.roomName}</em></h2>`;
 
+    roomSetupDiv.innerHTML += `<input id="leaveButton" class="button" type="button" value="Leave Room">`;
+
     //start button for host
     if(isHost){
       roomSetupDiv.innerHTML += `<input id="startButton" class="button" type="button" value="Start the Game">`;
 
       const startButton = document.querySelector("#startButton");
+      console.log("button clicked");  
+
       startButton.addEventListener('click', (e)=>{
+        console.log("button clicked");  
+
         if (Object.keys(data.roomObj).length < 4) {
           startButton.value = "Must have at least 4 players";
           setTimeout(() => {
@@ -163,6 +177,8 @@ const updateRoomStatusC = (data) =>{
         }
       });
     }
+
+    document.querySelector("#leaveButton").onclick = leaveRoom;
 
     const keys = Object.keys(data.roomObj);
     for(let i = 0; i < keys.length; i++){
@@ -207,10 +223,35 @@ const onJoin = (roomName) =>{
   socket.on('updateHealth',health);  
 };
 
+const leaveRoom = () =>{
+
+  location.reload();
+
+  //  console.log("in leave room");
+  //
+  //  const roomSetupEle = document.querySelector("#roomSetup");
+  //
+  //  roomSetupEle.innerHTML =  '<div id="hostRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="hostRoom">Start a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<input id="hostName" name="hostRoom" type="text" placeholder="Battle Name">';
+  //  roomSetupEle.innerHTML += '<input id="hostButton" class="button" type="button" value="Begin!">';
+  //  roomSetupEle.innerHTML += '</div>';
+  //  roomSetupEle.innerHTML += '<br />';
+  //  roomSetupEle.innerHTML += '<div id="joinRoomDiv">';
+  //  roomSetupEle.innerHTML += '<label for="joinRoom">Join a Battle: </label><br />';
+  //  roomSetupEle.innerHTML += '<div id="battleList">';
+  //
+  //  socket.emit('dc');
+  //  cancelAnimationFrame(animationFrame);
+  //
+  //  init();
+
+}
+
 //Opening function
 const init = () => {
   audioInit();
-  
+
   //Create and access canvas
   canvas = document.querySelector('canvas');
 
