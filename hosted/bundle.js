@@ -215,10 +215,6 @@ var movementUpdate = function movementUpdate(data) {
     return;
   }
 
-  car.prevX = data.prevX;
-  car.prevY = data.prevY;
-  car.destX = data.destX;
-  car.destY = data.destY;
   car.x = data.x;
   car.y = data.y;
   car.moveLeft = data.moveLeft;
@@ -233,7 +229,6 @@ var movementUpdate = function movementUpdate(data) {
   car.fillStyle = data.fillStyle;
   car.size = data.size;
   car.health = data.health;
-  car.pull = data.pull;
 
   socket.emit('hostUpdatedMovement', hosted[data.hash]);
 };
@@ -448,6 +443,7 @@ var onJoin = function onJoin(roomName) {
   socket.on('hostLeft', hostLeft);
   socket.on('hostStart', hostStart);
   socket.on('endGame', endGame);
+  socket.on('updateHealth', health);
 };
 
 //Opening function
@@ -717,6 +713,10 @@ var checkCollisions = function checkCollisions(dt) {
                 if (car2.health <= 0) {
                     car2.state = CAR_STATE.DEAD;
                 }
+
+                if (isHost) {
+                    socket.emit('healthUpdate', { car: car, car2: car2 });
+                }
             }
         }
     }
@@ -746,10 +746,6 @@ var update = function update(data) {
   var car = cars[data.hash];
   car.x = data.x;
   car.y = data.y;
-  car.prevX = data.prevX;
-  car.prevY = data.prevY;
-  car.destX = data.destX;
-  car.destY = data.destY;
   car.moveLeft = data.moveLeft;
   car.moveRight = data.moveRight;
   car.moveDown = data.moveDown;
@@ -757,12 +753,10 @@ var update = function update(data) {
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;
-  car.drag = car.drag;
   car.state = car.state;
   car.fillStyle = car.fillStyle;
   car.size = car.size;
   car.health = car.health;
-  car.pull = car.pull;
 };
 
 var hostLeft = function hostLeft() {
@@ -782,6 +776,16 @@ var removeUser = function removeUser(data) {
     console.log(cars[data]);
     delete cars[data];
   }
+};
+
+var health = function health(data) {
+  var car = data.car;
+  var car2 = data.car2;
+
+  cars[car.hash].health = car.health;
+  cars[car.hash].state = car.state;
+  cars[car2.hash].health = car2.health;
+  cars[car2.hash].state = car2.state;
 };
 
 var confirmHost = function confirmHost() {

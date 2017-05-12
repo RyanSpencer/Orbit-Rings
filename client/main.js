@@ -203,7 +203,8 @@ const onJoin = (roomName) =>{
   socket.on('left', removeUser);
   socket.on('hostLeft', hostLeft);
   socket.on('hostStart', hostStart);
-	socket.on('endGame', endGame);
+  socket.on('endGame', endGame);
+  socket.on('updateHealth',health);  
 };
 
 //Opening function

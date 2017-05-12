@@ -241,6 +241,10 @@ const checkCollisions = (dt) => {
                 if (car2.health <= 0) {
                     car2.state = CAR_STATE.DEAD;
                 }
+                
+                if (isHost) {
+                    socket.emit('healthUpdate', {car: car, car2: car2});
+                }
             }
         }
     }
