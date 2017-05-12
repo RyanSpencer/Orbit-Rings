@@ -147,7 +147,7 @@ const updateRoomStatusC = (data) =>{
     //start button for host
     if(isHost){
       roomSetupDiv.innerHTML += `<input id="startButton" class="button" type="button" value="Start the Game">`;
-      
+
       const startButton = document.querySelector("#startButton");
       startButton.addEventListener('click', (e)=>{
         if (Object.keys(data.roomObj).length < 4) {
@@ -160,11 +160,9 @@ const updateRoomStatusC = (data) =>{
           console.log('host clicked start');
           socket.emit('hostStart');
           roomSetupDiv.removeChild(startButton);
-          }
+        }
       });
     }
-
-  
 
     const keys = Object.keys(data.roomObj);
     for(let i = 0; i < keys.length; i++){
@@ -187,10 +185,12 @@ const updateRoomStatusC = (data) =>{
 
 const hostStart = () =>{
   gameState = GAME_STATE.INGAME;
+  playGameMusic();
 };
 
 const endGame = () =>{
-	gameState = GAME_STATE.END;
+  gameState = GAME_STATE.END;
+  playMenuMusic();
 };
 
 const onJoin = (roomName) =>{
@@ -209,6 +209,8 @@ const onJoin = (roomName) =>{
 
 //Opening function
 const init = () => {
+  audioInit();
+  
   //Create and access canvas
   canvas = document.querySelector('canvas');
 

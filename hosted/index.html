@@ -8,12 +8,16 @@
     <link rel="stylesheet" href="/assets/style.css">
   </head>
   <body>
+    
+    <input id="audioButton" class="button" type="button" value="Toggle Audio">
+    <audio id="menuAudio" src="assets/media/pregame.mp3"></audio>
+    <audio id="gameAudio" src="assets/media/game.mp3"></audio>
     <h1>Orbit Rings</h1>
-		<img id="topAd" src="assets/media/pizzabanner-copy.png" alt="Banner Ad" height="100" width="1000" />
+    <img id="topAd" src="assets/media/bannerTop.jpg" alt="Banner Ad" height="100" width="1000" />
     <div id="gameContent">
-			<img id="leftAd" src="assets/media/pizzabanner-copy.png" alt="Banner Ad" height="720" width="100" />
+      <img id="leftAd" src="assets/media/pizzabanner-copy.png" alt="Banner Ad" height="720" width="100" />
       <canvas id="canvas" height="720" width="1280">Please use an HTML 5 browser</canvas>
-            
+
       <div id="roomSetup">
         <div id="hostRoomDiv">
           <label for="hostRoom">Start a Battle: </label><br />
@@ -24,14 +28,13 @@
         <div id="joinRoomDiv">
           <label for="joinRoom">Join a Battle: </label><br />
           <div id="battleList">
-<!--
-            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (4/8)">
-            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (2/8)">
-            <input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (6/8)">
+            <!--
+<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (4/8)">
+<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (2/8)">
+<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (6/8)">
 -->
           </div>
         </div>
-        
       </div>
     </div>
   </body>

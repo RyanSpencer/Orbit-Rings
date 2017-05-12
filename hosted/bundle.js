@@ -1,5 +1,51 @@
 "use strict";
 
+var music = true;
+var menuMusicEle = void 0;
+var gameMusicEle = void 0;
+
+var playMenuMusic = function playMenuMusic() {
+  menuMusicEle.play();
+  gameMusicEle.pause();
+};
+
+var playGameMusic = function playGameMusic() {
+  menuMusicEle.pause();
+  gameMusicEle.play();
+};
+
+var toggleMusic = function toggleMusic() {
+  console.log("toggling music");
+
+  if (music) {
+    //mute music
+    menuMusicEle.muted = true;
+    gameMusicEle.muted = true;
+
+    music = false;
+  } else {
+    //unmute music
+    menuMusicEle.muted = false;
+    gameMusicEle.muted = false;
+
+    music = true;
+  }
+};
+
+var audioInit = function audioInit() {
+  //get audio eles
+  menuMusicEle = document.querySelector("#menuAudio");
+  gameMusicEle = document.querySelector("#gameAudio");
+
+  //start the music
+  playMenuMusic();
+
+  document.querySelector("#audioButton").onclick = function () {
+    toggleMusic();
+  };
+};
+"use strict";
+
 //Enable for live debug
 var debug = false;
 
@@ -426,10 +472,12 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
 
 var hostStart = function hostStart() {
   gameState = GAME_STATE.INGAME;
+  playGameMusic();
 };
 
 var endGame = function endGame() {
   gameState = GAME_STATE.END;
+  playMenuMusic();
 };
 
 var onJoin = function onJoin(roomName) {
@@ -448,6 +496,8 @@ var onJoin = function onJoin(roomName) {
 
 //Opening function
 var init = function init() {
+  audioInit();
+
   //Create and access canvas
   canvas = document.querySelector('canvas');
 
