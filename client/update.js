@@ -11,10 +11,6 @@ const update = (data) => {
   const car = cars[data.hash];
   car.x = data.x;
   car.y = data.y;
-  car.prevX = data.prevX;
-  car.prevY = data.prevY;
-  car.destX = data.destX;
-  car.destY = data.destY;
   car.moveLeft = data.moveLeft;
   car.moveRight = data.moveRight;
   car.moveDown = data.moveDown;
@@ -22,12 +18,10 @@ const update = (data) => {
   car.alpha = 0.05;
   car.velocity = data.velocity;
   car.acceleration = data.acceleration;
-  car.drag = car.drag;
   car.state = car.state;
   car.fillStyle = car.fillStyle;
   car.size = car.size;
   car.health = car.health;
-  car.pull = car.pull;
 };
 
 const hostLeft = () => {
@@ -47,6 +41,16 @@ const removeUser = (data) => {
     console.log(cars[data]);
     delete cars[data];
   }
+};
+
+const health = (data) => {
+    const car = data.car;
+    const car2 = data.car2;
+    
+    cars[car.hash].health = car.health;
+    cars[car.hash].state = car.state;
+    cars[car2.hash].health = car2.health;
+    cars[car2.hash].state = car2.state;
 };
 
 const confirmHost = () => {
