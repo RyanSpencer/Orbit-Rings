@@ -15,10 +15,6 @@ const movementUpdate = (data) => {
     return;
   }
   
-  car.prevX = data.prevX;
-  car.prevY = data.prevY;
-  car.destX = data.destX;
-  car.destY = data.destY;
   car.x = data.x;
   car.y = data.y;
   car.moveLeft = data.moveLeft;
@@ -33,7 +29,6 @@ const movementUpdate = (data) => {
   car.fillStyle = data.fillStyle;
   car.size = data.size;
   car.health = data.health;
-  car.pull = data.pull;
   
   socket.emit('hostUpdatedMovement', hosted[data.hash]);
 };

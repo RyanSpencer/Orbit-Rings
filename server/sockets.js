@@ -61,6 +61,9 @@ const confirmHost = (sock) => {
   socket.on('hostUpdatedMovement', (data) => {
     socket.broadcast.to(socket.room).emit('updatedMovement', data);
   });
+  socket.on('healthUpdate', (data) => {
+    socket.broadcast.to(socket.room).emit('updateHealth', data);
+  });
 
   socket.emit('hostConfirm');
 };
