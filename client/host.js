@@ -29,6 +29,9 @@ const movementUpdate = (data) => {
   car.fillStyle = data.fillStyle;
   car.size = data.size;
   car.health = data.health;
+  car.spriteColor = data.spriteColor;
+  car.image = data.image;
+  car.direction = data.direction;
   
   socket.emit('hostUpdatedMovement', hosted[data.hash]);
 };

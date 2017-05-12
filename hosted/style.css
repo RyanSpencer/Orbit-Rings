@@ -40,7 +40,7 @@ form{
 #roomSetup{
   display: inline-block;
   color: white;
-  width: 310px;
+  width: 359px;
   text-align: center;
 }
 #hostRoomDiv{
@@ -59,16 +59,30 @@ form{
 }
 .playerAvatar{
   width: 60px;
-  height: 60px;
+  height: 40px;
   border-radius: 2px;
-  margin: 20px 0px;
+  margin: 26px 0px;
   margin-left: 120px;
+  display: inline-block;
+  float: left;
 }
-#host{
+#host, #isYou{
   font-family: 'Jura', 'Titillium Web', sans-serif;
   font-size: 1.4em;
-  padding-top: 15px;
+  margin-top: 10px;
 }
+
+.avatarImg{
+  margin-top: 4px;
+  margin-bottom: 2px;
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+}
+.avatarImg img{
+  height: 90px;
+}
+
 @media only screen and (max-width: 1710px) {
   canvas{
     margin-left: auto;
@@ -87,15 +101,15 @@ form{
   margin-left: 5%;
   margin-bottom: 20px;
   box-shadow: 0 0 10px 0 #444, 0 0 10px 0 #444;
-	display: none;
+  display: none;
 }
 @media (max-width: 1497px){
-	#leftAd{
-		display: none;	
-	}
-	#topAd{
-		display: block;
-	}
+  #leftAd{
+    display: none;	
+  }
+  #topAd{
+    display: block;
+  }
 }
 audio{
   display: none;
@@ -105,3 +119,11 @@ audio{
   right: 10px;
   top: 10px;
 }
+#audioButton img{
+  height: 30px;
+  width: 30px;
+}
+#mute{
+  display: none;
+}
+

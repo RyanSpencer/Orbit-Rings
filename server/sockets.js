@@ -30,12 +30,13 @@ const roomsObj = {};
 
     -by Ryan don't call me steven ma Spencer
 */
-const colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'pink', 'cyan'];
+const colors = ['red', 'orangered', 'green', 'yellow', 'purple', 'royalblue', 'pink', 'teal'];
+
 const positionCar = (carInRoom) => {
   let degree = 45;// 360/8
   const radiusMag = 200;
-  const centerX = (1280 / 2) - 12.5;
-  const centerY = (720 / 2) - 12.5;
+  const centerX = (1280 / 2) - 20;
+  const centerY = (720 / 2) - 20;
   degree *= carInRoom + 4;
 
   const radiusX = Math.cos(degree * (Math.PI / 180)) * radiusMag;
@@ -147,6 +148,9 @@ const configureSocket = (sock, data) => {
 
 
   car.fillStyle = colors[Object.keys(roomsObj[data.roomName]).length - 1];
+  car.spriteColor = car.fillStyle;
+
+  //
   roomsObj[data.roomName][hash].color = car.fillStyle;
   // client sends the name of the room they want to join
   // if room does not exist make them host

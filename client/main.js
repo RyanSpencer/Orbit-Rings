@@ -7,7 +7,33 @@ let hash;
 let isHost = false;
 let animationFrame;
 const bgImage = new Image();
+const redSprite = new Image();
+const orangeSprite = new Image();
+const greenSprite = new Image();
+const yellowSprite = new Image();
+const purpleSprite = new Image();
+const lightBlueSprite = new Image();
+const pinkSprite = new Image();
+const tealSprite = new Image();
 
+
+
+const avatars = {
+  red: redSprite,
+  orangered: orangeSprite,
+  green: greenSprite,
+  yellow: yellowSprite,
+  purple: purpleSprite,
+  royalblue: lightBlueSprite,
+  pink: pinkSprite,
+  teal: tealSprite
+};
+const directions = {
+  DOWNRIGHT: 0, 
+  DOWNLEFT: 1,
+  UPRIGHT: 2,
+  UPLEFT: 3,
+};
 let hosted = {};
 //The Various Game States and Car States
 const GAME_STATE = Object.freeze({
@@ -46,18 +72,22 @@ const keyDownHandler = (e) => {
   // W OR UP
   if(keyPressed === 87 || keyPressed === 38) {
     car.moveUp = true;
+    e.preventDefault();//keeps page from scrolling when arrows
   }
   // A OR LEFT
   else if(keyPressed === 65 || keyPressed === 37) {
     car.moveLeft = true;
+    e.preventDefault();
   }
   // S OR DOWN
   else if(keyPressed === 83 || keyPressed === 40) {
     car.moveDown = true;
+    e.preventDefault();
   }
   // D OR RIGHT
   else if(keyPressed === 68 || keyPressed === 39) {
     car.moveRight = true;
+    e.preventDefault();
   }
 
   return false;
@@ -184,7 +214,7 @@ const updateRoomStatusC = (data) =>{
     for(let i = 0; i < keys.length; i++){
 
       const currentSocket = data.roomObj[keys[i]];
-      console.log(`currentSocket: ${currentSocket}`);
+      console.dir(`currentSocket: ${currentSocket}`);
 
       const playerAvatar = document.createElement("div");
       roomSetupDiv.appendChild(playerAvatar);
@@ -193,8 +223,16 @@ const updateRoomStatusC = (data) =>{
 
       if(currentSocket.host){
         playerAvatar.innerHTML += "<p id='host'>Host</p>";
+      }else if(currentSocket.color == data.roomObj[hash].color){
+        console.log("i am groot");
+        playerAvatar.innerHTML += "<p id='isYou'> > </p>";
       }
       playerAvatar.setAttribute("class","playerAvatar");
+      
+      const avatarImg = document.createElement("div");
+      avatarImg.appendChild(avatars[currentSocket.color]);
+      avatarImg.setAttribute("class", "avatarImg" );
+      roomSetupDiv.appendChild(avatarImg);
     }
   }
 };
@@ -206,6 +244,7 @@ const hostStart = () =>{
 
 const endGame = () =>{
   gameState = GAME_STATE.END;
+
   playMenuMusic();
 };
 
@@ -268,6 +307,17 @@ const init = () => {
   //set backgroundImage
   bgImage.src = "./assets/media/background.jpg";
   //SOURCE -> https://pixabay.com/en/star-points-stains-effect-space-1626550/
+
+  //load in sprites 
+  orangeSprite.src = "./assets/media/orangeSprite.png";
+  redSprite.src = "./assets/media/redSprite.png";
+  greenSprite.src = "./assets/media/greenSprite.png";
+  yellowSprite.src = "./assets/media/yellowSprite.png";
+  purpleSprite.src = "./assets/media/purpleSprite.png";
+  lightBlueSprite.src = "./assets/media/lightBlueSprite.png";
+  pinkSprite.src = "./assets/media/pinkSprite.png";
+  tealSprite.src = "./assets/media/tealSprite.png";
+
 
   drawIntroScreen();
   eventHandler();

@@ -17,18 +17,27 @@ var playGameMusic = function playGameMusic() {
 var toggleMusic = function toggleMusic() {
   console.log("toggling music");
 
+  var sound = document.querySelector("#sound");
+  var mute = document.querySelector("#mute");
+
   if (music) {
     //mute music
     menuMusicEle.muted = true;
     gameMusicEle.muted = true;
 
     music = false;
+
+    sound.style.display = "none";
+    mute.style.display = "block";
   } else {
     //unmute music
     menuMusicEle.muted = false;
     gameMusicEle.muted = false;
 
     music = true;
+
+    sound.style.display = "block";
+    mute.style.display = "none";
   }
 };
 
@@ -40,9 +49,9 @@ var audioInit = function audioInit() {
   //start the music
   playMenuMusic();
 
-  document.querySelector("#audioButton").onclick = function () {
+  document.querySelector("#audioButton").addEventListener('click', function () {
     toggleMusic();
-  };
+  });
 };
 "use strict";
 
@@ -127,16 +136,33 @@ var drawCars = function drawCars() {
     for (var _i = 0; _i < keys.length; _i++) {
       var car = cars[keys[_i]];
 
-      console.log(car.state);
+      //console.log(car.state);
+
 
       //If the car is dead don't draw it and add to dead c
       if (car.state !== CAR_STATE.DEAD) {
 
         aliveCount++;
 
+        //const image = avatars[0];
+
         ctx.save();
-        ctx.fillStyle = car.fillStyle;
-        ctx.fillRect(car.x, car.y, car.size * 2, car.size * 2);
+
+        if (car.direction == directions.DOWNRIGHT) {
+          //downright
+          ctx.drawImage(avatars[car.spriteColor], car.spriteWidth * directions.DOWNRIGHT, 0, car.spriteWidth, car.spriteHeight, car.x, car.y, car.size * 2, car.size * 2);
+        } else if (car.direction == directions.DOWNLEFT) {
+          //downleft
+          ctx.drawImage(avatars[car.spriteColor], car.spriteWidth * directions.DOWNLEFT, 0, car.spriteWidth, car.spriteHeight, car.x, car.y, car.size * 2, car.size * 2);
+        } else if (car.direction == directions.UPRIGHT) {
+          //upright
+          ctx.drawImage(avatars[car.spriteColor], car.spriteWidth * directions.UPRIGHT, 0, car.spriteWidth, car.spriteHeight, car.x, car.y, car.size * 2, car.size * 2);
+        } else {
+          //car.direction = directions.UPLEFT upleft
+          ctx.drawImage(avatars[car.spriteColor], //nope
+          car.spriteWidth * directions.UPLEFT, 0, car.spriteWidth, car.spriteHeight, car.x, car.y, car.size * 2, car.size * 2);
+        }
+
         ctx.restore();
         if (debug) {
           //Show the origin of each rectangle for developer aid
@@ -226,8 +252,10 @@ var drawIntroScreen = function drawIntroScreen() {
     ctx.save();
     ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    fillText("Start or Join a Battle to Begin Playing", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    ctx.shadowBlur = 10;
+    fillText("Start or Join a Battle to Begin Playing.", WIDTH / 2, HEIGHT / 2 - 50, "20pt Jura", "white");
+    fillText("Use WASD to crash into other players and ", WIDTH / 2, HEIGHT / 2, "20pt Jura", "white");
+    fillText("annihilate their planet's populations.", WIDTH / 2, HEIGHT / 2 + 50, "20pt Jura", "white");
     ctx.restore();
   }, 300);
 };
@@ -275,6 +303,9 @@ var movementUpdate = function movementUpdate(data) {
   car.fillStyle = data.fillStyle;
   car.size = data.size;
   car.health = data.health;
+  car.spriteColor = data.spriteColor;
+  car.image = data.image;
+  car.direction = data.direction;
 
   socket.emit('hostUpdatedMovement', hosted[data.hash]);
 };
@@ -289,7 +320,31 @@ var hash = void 0;
 var isHost = false;
 var animationFrame = void 0;
 var bgImage = new Image();
+var redSprite = new Image();
+var orangeSprite = new Image();
+var greenSprite = new Image();
+var yellowSprite = new Image();
+var purpleSprite = new Image();
+var lightBlueSprite = new Image();
+var pinkSprite = new Image();
+var tealSprite = new Image();
 
+var avatars = {
+  red: redSprite,
+  orangered: orangeSprite,
+  green: greenSprite,
+  yellow: yellowSprite,
+  purple: purpleSprite,
+  royalblue: lightBlueSprite,
+  pink: pinkSprite,
+  teal: tealSprite
+};
+var directions = {
+  DOWNRIGHT: 0,
+  DOWNLEFT: 1,
+  UPRIGHT: 2,
+  UPLEFT: 3
+};
 var hosted = {};
 //The Various Game States and Car States
 var GAME_STATE = Object.freeze({
@@ -327,18 +382,22 @@ var keyDownHandler = function keyDownHandler(e) {
   // W OR UP
   if (keyPressed === 87 || keyPressed === 38) {
     car.moveUp = true;
+    e.preventDefault(); //keeps page from scrolling when arrows
   }
   // A OR LEFT
   else if (keyPressed === 65 || keyPressed === 37) {
       car.moveLeft = true;
+      e.preventDefault();
     }
     // S OR DOWN
     else if (keyPressed === 83 || keyPressed === 40) {
         car.moveDown = true;
+        e.preventDefault();
       }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
           car.moveRight = true;
+          e.preventDefault();
         }
 
   return false;
@@ -470,7 +529,7 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
     for (var i = 0; i < keys.length; i++) {
 
       var currentSocket = data.roomObj[keys[i]];
-      console.log('currentSocket: ' + currentSocket);
+      console.dir('currentSocket: ' + currentSocket);
 
       var playerAvatar = document.createElement("div");
       roomSetupDiv.appendChild(playerAvatar);
@@ -479,8 +538,16 @@ var updateRoomStatusC = function updateRoomStatusC(data) {
 
       if (currentSocket.host) {
         playerAvatar.innerHTML += "<p id='host'>Host</p>";
+      } else if (currentSocket.color == data.roomObj[hash].color) {
+        console.log("i am groot");
+        playerAvatar.innerHTML += "<p id='isYou'> > </p>";
       }
       playerAvatar.setAttribute("class", "playerAvatar");
+
+      var avatarImg = document.createElement("div");
+      avatarImg.appendChild(avatars[currentSocket.color]);
+      avatarImg.setAttribute("class", "avatarImg");
+      roomSetupDiv.appendChild(avatarImg);
     }
   }
 };
@@ -492,6 +559,7 @@ var hostStart = function hostStart() {
 
 var endGame = function endGame() {
   gameState = GAME_STATE.END;
+
   playMenuMusic();
 };
 
@@ -554,6 +622,16 @@ var init = function init() {
   bgImage.src = "./assets/media/background.jpg";
   //SOURCE -> https://pixabay.com/en/star-points-stains-effect-space-1626550/
 
+  //load in sprites 
+  orangeSprite.src = "./assets/media/orangeSprite.png";
+  redSprite.src = "./assets/media/redSprite.png";
+  greenSprite.src = "./assets/media/greenSprite.png";
+  yellowSprite.src = "./assets/media/yellowSprite.png";
+  purpleSprite.src = "./assets/media/purpleSprite.png";
+  lightBlueSprite.src = "./assets/media/lightBlueSprite.png";
+  pinkSprite.src = "./assets/media/pinkSprite.png";
+  tealSprite.src = "./assets/media/tealSprite.png";
+
   drawIntroScreen();
   eventHandler();
 
@@ -572,18 +650,18 @@ var colors = ["red", "green", "blue", "yellow", "orange", "purple", "pink", "cya
 
 //Universal Constants for cars
 var CAR = Object.freeze({
-    //Max Accel used to accelerate
-    MAX_ACCELERATION: 2.5,
-    //Max velocity used to clamp speed
-    MAX_VELOCITY: 7,
-    //Number of cars that are spawned
-    NUMB_CARS: 2
+  //Max Accel used to accelerate
+  MAX_ACCELERATION: 2.5,
+  //Max velocity used to clamp speed
+  MAX_VELOCITY: 7,
+  //Number of cars that are spawned
+  NUMB_CARS: 2
 });
 
 var CAR_STATE = Object.freeze({
-    DEFAULT: 0,
-    EXPLODING: 1,
-    DEAD: 2
+  DEFAULT: 0,
+  EXPLODING: 1,
+  DEAD: 2
 });
 
 //Used for FPS and dt
@@ -600,225 +678,245 @@ var character = [
 //Gravitational pull which is multipled by gravitational algorthims
 //Note: Planets will ignore the effects of planets with gravitational pulls less than them
 {
-    name: "earth",
-    size: 12.5,
-    health: 30,
-    pull: 2
+  name: "earth",
+  size: 12.5,
+  health: 30,
+  pull: 2
 }, {
-    name: "mars",
-    size: 20,
-    health: 40,
-    pull: 3
+  name: "mars",
+  size: 20,
+  health: 40,
+  pull: 3
 }, {
-    name: "mercury",
-    size: 8,
-    health: 20,
-    pull: 1
+  name: "mercury",
+  size: 8,
+  health: 20,
+  pull: 1
 }];
 
 var moveCar = function moveCar(dt, car) {
 
-    car.velocity.x += car.acceleration.x * dt;
-    car.velocity.y += car.acceleration.y * dt;
+  car.velocity.x += car.acceleration.x * dt;
+  car.velocity.y += car.acceleration.y * dt;
 
-    //Velocity is slowed by drag
-    if (car.velocity.x > 0) {
-        car.velocity.x -= car.drag;
-    } else if (car.velocity.x < 0) {
-        car.velocity.x += car.drag;
-    }
-    if (car.velocity.y > 0) {
-        car.velocity.y -= car.drag;
-    } else if (car.velocity.y < 0) {
-        car.velocity.y += car.drag;
-    }
+  //Velocity is slowed by drag
+  if (car.velocity.x > 0) {
+    car.velocity.x -= car.drag;
+  } else if (car.velocity.x < 0) {
+    car.velocity.x += car.drag;
+  }
+  if (car.velocity.y > 0) {
+    car.velocity.y -= car.drag;
+  } else if (car.velocity.y < 0) {
+    car.velocity.y += car.drag;
+  }
 
-    //to check gravitational pull towards the sun
-    var length = distance(car, sun);
-    //If its inside the area of the effect then continue
-    if (length > sun.core && length < sun.size) {
-        //Get vectors of the suns position and the cars position and subtract them,
-        //then normalize it and rotate at a 90 degree angle to create a quasi gravitational field
-        var vec = new Victor(car.x + car.size, car.y + car.size);
-        var vec2 = new Victor(sun.x, sun.y);
-        vec = vec.subtract(vec2);
-        vec = vec.normalize();
-        vec = vec.rotate(Math.PI / 2);
-        //Using the standard gravational equation of F = Gm1 + gm2 / length squared and applys it to the velocity
-        var force = sun.pull * (car.size * sun.core) / Math.pow(length, 2);
-        car.velocity.x += vec.x * force;
-        car.velocity.y += vec.y * force;
-    }
-    //Clamp the velocity based on the max velocity
-    car.velocity.x = clamp(car.velocity.x, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
-    car.velocity.y = clamp(car.velocity.y, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
+  //to check gravitational pull towards the sun
+  var length = distance(car, sun);
+  //If its inside the area of the effect then continue
+  if (length > sun.core && length < sun.size) {
+    //Get vectors of the suns position and the cars position and subtract them,
+    //then normalize it and rotate at a 90 degree angle to create a quasi gravitational field
+    var vec = new Victor(car.x + car.size, car.y + car.size);
+    var vec2 = new Victor(sun.x, sun.y);
+    vec = vec.subtract(vec2);
+    vec = vec.normalize();
+    vec = vec.rotate(Math.PI / 2);
+    //Using the standard gravational equation of F = Gm1 + gm2 / length squared and applys it to the velocity
+    var force = sun.pull * (car.size * sun.core) / Math.pow(length, 2);
+    car.velocity.x += vec.x * force;
+    car.velocity.y += vec.y * force;
+  }
+  //Clamp the velocity based on the max velocity
+  car.velocity.x = clamp(car.velocity.x, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
+  car.velocity.y = clamp(car.velocity.y, -CAR.MAX_VELOCITY, CAR.MAX_VELOCITY);
 
-    //move based on velocity
-    car.x += car.velocity.x;
-    car.y += car.velocity.y;
+  //move based on velocity
+  car.x += car.velocity.x;
+  car.y += car.velocity.y;
 };
 
 //Move all the cars
 var moveCars = function moveCars(dt) {
-    var car = cars[hash];
+  var car = cars[hash];
 
-    //First car is controlled using arrow keys
-    var accel = false;
-    //Acceleration is set to a constant while keys are down and then reset to zero when not
-    if (car.moveUp) {
-        car.acceleration.y = -CAR.MAX_ACCELERATION;
-        accel = true;
-    }
-    if (car.moveDown) {
-        car.acceleration.y = CAR.MAX_ACCELERATION;
-        accel = true;
-    }
-    if (car.moveLeft) {
-        car.acceleration.x = -CAR.MAX_ACCELERATION;;
-        accel = true;
-    }
-    if (car.moveRight) {
-        car.acceleration.x = CAR.MAX_ACCELERATION;;
-        accel = true;
-    }
-    if (!accel) {
-        car.acceleration.x = 0;
-        car.acceleration.y = 0;
-    }
+  //First car is controlled using arrow keys
+  var accel = false;
+  //Acceleration is set to a constant while keys are down and then reset to zero when not
+  if (car.moveUp) {
+    car.acceleration.y = -CAR.MAX_ACCELERATION;
+    accel = true;
+  }
+  if (car.moveDown) {
+    car.acceleration.y = CAR.MAX_ACCELERATION;
+    accel = true;
+  }
+  if (car.moveLeft) {
+    car.acceleration.x = -CAR.MAX_ACCELERATION;;
+    accel = true;
+  }
+  if (car.moveRight) {
+    car.acceleration.x = CAR.MAX_ACCELERATION;;
+    accel = true;
+  }
+  if (!accel) {
+    car.acceleration.x = 0;
+    car.acceleration.y = 0;
+  }
 
-    moveCar(dt, car);
+  moveCar(dt, car);
 
-    if (isHost) {
-        car.lastUpdate = new Date().getTime();
-        socket.emit('hostUpdatedMovement', car);
-    } else {
-        socket.emit('movementUpdate', car);
-    }
+  if (car.moveDown && car.direction === directions.UPLEFT) car.direction = directions.DOWNLEFT;
+  if (car.moveDown && car.direction === directions.UPRIGHT) car.direction = directions.DOWNRIGHT;
+
+  if (car.moveLeft && car.direction === directions.DOWNRIGHT) car.direction = directions.DOWNLEFT;
+  if (car.moveLeft && car.direction === directions.UPRIGHT) car.direction = directions.UPLEFT;
+
+  if (car.moveUp && car.direction === directions.DOWNLEFT) car.direction = directions.UPLEFT;
+  if (car.moveUp && car.direction === directions.DOWNRIGHT) car.direction = directions.UPRIGHT;
+
+  if (car.moveRight && car.direction === directions.DOWNLEFT) car.direction = directions.DOWNRIGHT;
+  if (car.moveRight && car.direction === directions.UPLEFT) car.direction = directions.UPRIGHT;
+
+  if (car.moveUp && car.moveLeft) car.direction = directions.UPLEFT;
+
+  if (car.moveUp && car.moveRight) car.direction = directions.UPRIGHT;
+
+  if (car.moveDown && car.moveLeft) car.direction = directions.DOWNLEFT;
+
+  if (car.moveDown && car.moveRight) car.direction = directions.DOWNRIGHT;
+
+  if (isHost) {
+    car.lastUpdate = new Date().getTime();
+    socket.emit('hostUpdatedMovement', car);
+  } else {
+    socket.emit('movementUpdate', car);
+  }
 };
 
 //Collision detection oooooooh boi
 var checkCollisions = function checkCollisions(dt) {
 
-    var keys = Object.keys(cars);
-    //Loop through all cars
-    for (var i = 0; i < keys.length; i++) {
-        var car = cars[keys[i]];
-        //If they are dead ignore em
-        if (car.state === CAR_STATE.DEAD) {
-            continue;
-        }
-        //If cars are at any of the screen edges they bounce a little bit and can't move past them
-        if (car.x <= 0) {
-            car.velocity.x *= -0.4;
-            car.x = 0;
-            moveCar(dt, car);
-        }
-        if (car.x + car.size * 2 >= WIDTH) {
-            car.velocity.x *= -0.4;
-            car.x = WIDTH - car.size * 2;
-            moveCar(dt, car);
-        }
-        if (car.y <= 0) {
-            car.velocity.y *= -0.4;
-            car.y = 0;
-            moveCar(dt, car);
-        }
-        if (car.y + car.size * 2 >= HEIGHT) {
-            car.velocity.y *= -0.4;
-            car.y = HEIGHT - car.size * 2;
-            moveCar(dt, car);
-        }
-
-        //They also bounce off the sun
-        if (distance(car, sun) < car.size + sun.core) {
-            car.velocity.y *= -0.8;
-            car.velocity.x *= -0.8;
-            moveCar(dt, car);
-        }
-        //loop through the cars a second time to check car on car action
-        for (var j = 0; j < keys.length; j++) {
-            var car2 = cars[keys[j]];
-
-            //skip through if the car is dead or its the same car
-            if (car2.state === CAR_STATE.DEAD) continue;
-            if (i == j) {
-                continue;
-            }
-
-            //Call collision on the two cars
-            if (aabb(car, car2)) {
-
-                //make them bounce off of each other
-                car.velocity.y *= -0.8;
-                car.velocity.x *= -0.8;
-                car2.velocity.y *= -0.8;
-                car2.velocity.x *= -0.8;
-
-                //Cody created code to stop them from going inside one another
-                //Basically move them slightly in the x or y direciton when they collide
-                if (car.x > car2.x) {
-                    car.x++;
-                } else {
-                    car2.x++;
-                }
-
-                if (car.y > car2.y) {
-                    car.y++;
-                } else {
-                    car2.y++;
-                }
-
-                //Call move once to make sure actions actualy take palce
-                moveCar(dt, car);
-                moveCar(dt, car2);
-
-                //Calculate health loss
-                //Larger cars take less damage agaisnt smaller cars and vice versa
-                var sizeDif = car2.size / car.size;
-                //Cars which have a slower x velocity do bad agasint ones with faster x velocity
-                var xVelDif = Math.abs(car2.velocity.x) - Math.abs(car.velocity.x);
-                //If its too small change it to prevent odd corner cases
-                if (xVelDif <= 0.5) xVelDif = 0.5;
-                //Same thing with y velocity
-                var yVelDif = Math.abs(car2.velocity.y) - Math.abs(car.velocity.y);
-                if (yVelDif <= 0.5) yVelDif = 0.5;
-
-                //Subtract from overall health based on all factors
-                car.health -= sizeDif * xVelDif * yVelDif;
-
-                //Same thing for the other car colliding
-                sizeDif = car.size / car2.size;
-                xVelDif = Math.abs(car.velocity.x) - Math.abs(car2.velocity.x);
-                if (xVelDif <= 0.5) xVelDif = 0.5;
-                yVelDif = Math.abs(car.velocity.y) - Math.abs(car2.velocity.y);
-                if (yVelDif <= 0.5) yVelDif = 0.5;
-
-                car2.health -= sizeDif * xVelDif * yVelDif;
-
-                //If either car drops to zero health or less they die
-                if (car.health <= 0) {
-                    car.state = CAR_STATE.DEAD;
-                }
-                if (car2.health <= 0) {
-                    car2.state = CAR_STATE.DEAD;
-                }
-
-                if (isHost) {
-                    socket.emit('healthUpdate', { car: car, car2: car2 });
-                }
-            }
-        }
+  var keys = Object.keys(cars);
+  //Loop through all cars
+  for (var i = 0; i < keys.length; i++) {
+    var car = cars[keys[i]];
+    //If they are dead ignore em
+    if (car.state === CAR_STATE.DEAD) {
+      continue;
     }
+    //If cars are at any of the screen edges they bounce a little bit and can't move past them
+    if (car.x <= 0) {
+      car.velocity.x *= -0.4;
+      car.x = 0;
+      moveCar(dt, car);
+    }
+    if (car.x + car.size * 2 >= WIDTH) {
+      car.velocity.x *= -0.4;
+      car.x = WIDTH - car.size * 2;
+      moveCar(dt, car);
+    }
+    if (car.y <= 0) {
+      car.velocity.y *= -0.4;
+      car.y = 0;
+      moveCar(dt, car);
+    }
+    if (car.y + car.size * 2 >= HEIGHT) {
+      car.velocity.y *= -0.4;
+      car.y = HEIGHT - car.size * 2;
+      moveCar(dt, car);
+    }
+
+    //They also bounce off the sun
+    if (distance(car, sun) < car.size + sun.core) {
+      car.velocity.y *= -0.8;
+      car.velocity.x *= -0.8;
+      moveCar(dt, car);
+    }
+    //loop through the cars a second time to check car on car action
+    for (var j = 0; j < keys.length; j++) {
+      var car2 = cars[keys[j]];
+
+      //skip through if the car is dead or its the same car
+      if (car2.state === CAR_STATE.DEAD) continue;
+      if (i == j) {
+        continue;
+      }
+
+      //Call collision on the two cars
+      if (aabb(car, car2)) {
+
+        //make them bounce off of each other
+        car.velocity.y *= -0.8;
+        car.velocity.x *= -0.8;
+        car2.velocity.y *= -0.8;
+        car2.velocity.x *= -0.8;
+
+        //Cody created code to stop them from going inside one another
+        //Basically move them slightly in the x or y direciton when they collide
+        if (car.x > car2.x) {
+          car.x++;
+        } else {
+          car2.x++;
+        }
+
+        if (car.y > car2.y) {
+          car.y++;
+        } else {
+          car2.y++;
+        }
+
+        //Call move once to make sure actions actualy take palce
+        moveCar(dt, car);
+        moveCar(dt, car2);
+
+        //Calculate health loss
+        //Larger cars take less damage agaisnt smaller cars and vice versa
+        var sizeDif = car2.size / car.size;
+        //Cars which have a slower x velocity do bad agasint ones with faster x velocity
+        var xVelDif = Math.abs(car2.velocity.x) - Math.abs(car.velocity.x);
+        //If its too small change it to prevent odd corner cases
+        if (xVelDif <= 0.5) xVelDif = 0.5;
+        //Same thing with y velocity
+        var yVelDif = Math.abs(car2.velocity.y) - Math.abs(car.velocity.y);
+        if (yVelDif <= 0.5) yVelDif = 0.5;
+
+        //Subtract from overall health based on all factors
+        car.health -= sizeDif * xVelDif * yVelDif;
+
+        //Same thing for the other car colliding
+        sizeDif = car.size / car2.size;
+        xVelDif = Math.abs(car.velocity.x) - Math.abs(car2.velocity.x);
+        if (xVelDif <= 0.5) xVelDif = 0.5;
+        yVelDif = Math.abs(car.velocity.y) - Math.abs(car2.velocity.y);
+        if (yVelDif <= 0.5) yVelDif = 0.5;
+
+        car2.health -= sizeDif * xVelDif * yVelDif;
+
+        //If either car drops to zero health or less they die
+        if (car.health <= 0) {
+          car.state = CAR_STATE.DEAD;
+        }
+        if (car2.health <= 0) {
+          car2.state = CAR_STATE.DEAD;
+        }
+
+        if (isHost) {
+          socket.emit('healthUpdate', { car: car, car2: car2 });
+        }
+      }
+    }
+  }
 };
 //Take from boomshine to smooth animation
 var calculateDeltaTime = function calculateDeltaTime() {
-    var now = void 0,
-        fps = void 0;
-    now = performance.now();
-    fps = 1000 / (now - lastTime);
-    fps = clamp(fps, 12, 60);
-    lastTime = now;
-    return 1 / fps;
+  var now = void 0,
+      fps = void 0;
+  now = performance.now();
+  fps = 1000 / (now - lastTime);
+  fps = clamp(fps, 12, 60);
+  lastTime = now;
+  return 1 / fps;
 };
 'use strict';
 
@@ -846,6 +944,8 @@ var update = function update(data) {
   car.fillStyle = car.fillStyle;
   car.size = car.size;
   car.health = car.health;
+  car.direction = data.direction;
+  car.image = car.image;
 };
 
 var hostLeft = function hostLeft() {
@@ -879,6 +979,7 @@ var confirmHost = function confirmHost() {
 
 var setUser = function setUser(data) {
   hash = data.hash;
+  data.image = avatars[data.spriteColor];
   cars[hash] = data;
   console.log('This User:');
   console.log(cars[hash]);
@@ -887,6 +988,10 @@ var setUser = function setUser(data) {
     hosted[hash] = data;
   }
   gameState === GAME_STATE.INGAME;
+
+  //call to update before host clicks ready so they don't kermit death >:(
+  socket.emit('movementUpdate', data);
+
   requestAnimationFrame(drawCars);
 };
 

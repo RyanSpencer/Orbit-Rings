@@ -14,21 +14,29 @@ const playGameMusic = () => {
 
 const toggleMusic = () => {
   console.log("toggling music");
-  
+
+  const sound = document.querySelector("#sound");
+  const mute = document.querySelector("#mute");
+
   if(music){
     //mute music
     menuMusicEle.muted = true;
     gameMusicEle.muted = true;
-    
-    
+
     music = false;
+
+    sound.style.display = "none";
+    mute.style.display = "block";
+
   }else{
     //unmute music
     menuMusicEle.muted = false;
     gameMusicEle.muted = false;
-    
-    
+
     music = true;
+
+    sound.style.display = "block";
+    mute.style.display = "none";
   }
 }
 
@@ -39,8 +47,8 @@ const audioInit = () => {
 
   //start the music
   playMenuMusic();
-  
-  document.querySelector("#audioButton").onclick = () =>{
+
+  document.querySelector("#audioButton").addEventListener('click', () =>{
     toggleMusic();
-  }
+  });
 }

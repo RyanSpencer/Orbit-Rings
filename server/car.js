@@ -15,6 +15,10 @@ class Car {
     this.moveRight = false;
     this.moveDown = false;
     this.moveUp = false;
+    this.direction = 0;
+    this.spriteWidth = 512;
+    this.spriteHeight = 512;
+    this.spriteColor = 'red';
     this.velocity = {};
     this.velocity.x = 0;
     this.velocity.y = 0;
@@ -24,9 +28,10 @@ class Car {
     this.drag = 0.01;
     this.state = 0;
     this.fillStyle = 'red';
-    this.size = 12.5;
+    this.size = 20;
     this.health = 30;
     this.pull = 4;
+    this.image = undefined;
   }
 }
 

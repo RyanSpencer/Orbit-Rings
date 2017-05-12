@@ -6,10 +6,14 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/assets/bundle.js"></script>
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="shortcut icon" href="/assets/media/favicon.png"/>
   </head>
   <body>
-    
-    <input id="audioButton" class="button" type="button" value="Toggle Audio">
+
+    <div id="audioButton">
+      <img id="sound" src="assets/media/sound.png"/>
+      <img id="mute" src="assets/media/mute.png"/>
+    </div>
     <audio id="menuAudio" src="assets/media/pregame.mp3"></audio>
     <audio id="gameAudio" src="assets/media/game.mp3"></audio>
     <h1>Orbit Rings</h1>
@@ -28,11 +32,6 @@
         <div id="joinRoomDiv">
           <label for="joinRoom">Join a Battle: </label><br />
           <div id="battleList">
-            <!--
-<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (4/8)">
-<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (2/8)">
-<input id="joinButton" class="button" class="currentRooms" type="button" value="Example Room (6/8)">
--->
           </div>
         </div>
       </div>
