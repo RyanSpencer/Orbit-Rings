@@ -244,7 +244,7 @@ const checkCollisions = (dt) => {
         if (yVelDif <= 0.5) yVelDif = 0.5;
 
         //Subtract from overall health based on all factors
-        car.health -= sizeDif * xVelDif * yVelDif;
+        if (isHost) car.health -= sizeDif * xVelDif * yVelDif;
 
         //Same thing for the other car colliding
         sizeDif = car.size/car2.size;
@@ -253,7 +253,7 @@ const checkCollisions = (dt) => {
         yVelDif = (Math.abs(car.velocity.y) - Math.abs(car2.velocity.y));
         if (yVelDif <= 0.5) yVelDif = 0.5;
 
-        car2.health -=  sizeDif * xVelDif * yVelDif;
+        if (isHost) car2.health -=  sizeDif * xVelDif * yVelDif;
 
         //If either car drops to zero health or less they die
         if (car.health <= 0) {
