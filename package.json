@@ -23,7 +23,7 @@
   "homepage": "https://github.com/RyanSpencer/Orbit-Rings#readme",
   "dependencies": {
     "express": "^4.17.3",
-    "socket.io": "^3.0.3",
+    "socket.io": "^4.6.2",
     "victor": "^1.1.0",
     "xxhashjs": "^0.2.1"
   },
